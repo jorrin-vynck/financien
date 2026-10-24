@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html lang="nl"><head><meta content="noindex, nofollow" name="robots"/><link href="/financien/favicon.png?v=2" rel="icon" sizes="64x64" type="image/png"/><link href="/financien/favicon-32.png?v=2" rel="icon" sizes="32x32" type="image/png"/><link href="/financien/favicon.png?v=2" rel="shortcut icon"/><link href="/financien/apple-touch-icon.png?v=2" rel="apple-touch-icon"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Mijn beleggingen</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f6f4; --surface: #ffffff; --border: #e4e2dc;
+  --text: #0b0b0b; --text-2: #52514e; --muted: #8a8984; --grid: #ebe9e4;
+  --s1: #2a78d6; --s1-fill: rgba(42,120,214,.10); --ref: #8a8984;
+  --pos: #008300; --neg: #c63b3a; --hover: rgba(0,0,0,.04);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #111110; --surface: #1a1a19; --border: #2c2c2a;
+    --text: #f0efec; --text-2: #c3c2b7; --muted: #8f8e88; --grid: #2a2a28;
+    --s1: #3987e5; --s1-fill: rgba(57,135,229,.16); --ref: #8f8e88;
+    --pos: #4cc24c; --neg: #e66767; --hover: rgba(255,255,255,.05);
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 24px 16px 64px; }
+header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 20px; }
+h1 { font-size: 22px; margin: 0; }
+h2 { font-size: 15px; font-weight: 600; color: var(--text); margin: 0 0 14px; }
+a { color: var(--s1); text-decoration: none; }
+.sub { color: var(--muted); font-size: 12px; }
+.card { background: var(--surface); border: 0; border-radius: 18px; padding: 22px; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.035); }
+.grid { display: grid; gap: 12px; }
+.tiles { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.tile .label { color: var(--text-2); font-size: 12px; }
+.tile .value { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.tile .note { color: var(--muted); font-size: 11px; margin-top: 2px; }
+.section { margin-top: 16px; }
+.pos { color: var(--pos); } .neg { color: var(--neg); }
+.toolbar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.ranges { display: flex; gap: 4px; }
+.ranges button { font: inherit; font-size: 12px; border: 1px solid var(--border); background: var(--surface); color: var(--text-2);
+  border-radius: 999px; padding: 4px 12px; cursor: pointer; }
+.ranges button.on { background: var(--text); color: var(--surface); border-color: var(--text); }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--text-2); }
+.sw { width: 14px; height: 0; display: inline-block; margin-right: 6px; vertical-align: 3px; border-top: 2px solid var(--s1); }
+.sw.ref { border-top: 2px dashed var(--ref); }
+svg text { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-weight: 600; color: var(--text-2); font-size: 12px; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+td { padding: 8px; border-bottom: 1px solid var(--grid); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.share { height: 8px; background: var(--grid); border-radius: 999px; min-width: 60px; }
+.share > div { height: 100%; background: var(--s1); border-radius: 999px; }
+.row2 { grid-template-columns: 1fr 1fr; }
+@media (max-width: 820px) { .row2 { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .hide-s { display: none; } }
+#tip { position: fixed; pointer-events: none; background: var(--text); color: var(--surface); padding: 6px 10px;
+  border-radius: 8px; font-size: 12px; line-height: 1.45; opacity: 0; transition: opacity .1s; z-index: 10; }
+</style>
+<style>
+.blur { filter: blur(5px); -webkit-user-select: none; user-select: none; }
+svg text.blur { filter: blur(2.5px); }
+.public-banner { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px;
+  margin-bottom: 16px; font-size: 13px; color: var(--text-2); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.public-banner a { color: var(--s1); font-weight: 600; text-decoration: none; }
+svg { max-width: 100%; height: auto; }
+.tablewrap .hide-s { display: table-cell !important; }  /* categorie altijd tonen bij transacties */
+</style></head>
+<body>
+<div class="wrap"><div class="public-banner"><span>Openbare versie: bedragen en namen zijn verborgen.</span><a href="../../">Inloggen voor alles →</a></div>
+<header>
+<div><a href="../">← Overzicht</a><h1>Mijn beleggingen</h1></div>
+<span class="sub" id="updated">Koersen 24/10/2026 07:31</span>
+</header>
+<div class="grid tiles" id="kpis"><div class="card tile"><div class="label">Totaal belegd (alle platformen)</div><div class="value"><span class="blur">€0.000,00</span></div><div class="note">Revolut<span class="blur"> €0.000</span> · andere<span class="blur"> €0.000</span></div></div><div class="card tile"><div class="label">Revolut: waarde</div><div class="value"><span class="blur">€0.000,00</span></div><div class="note">waarvan<span class="blur"> €0,00</span> cash</div></div><div class="card tile"><div class="label">Revolut: winst / verlies</div><div class="value"><span class="pos"><span class="blur">+€000,00</span></span></div><div class="note">+13,7% op<span class="blur"> €0.000</span> aankoop</div></div><div class="card tile"><div class="label">Beste positie</div><div class="value">EUNL <span class="pos" style="font-size:16px">+20,3%</span></div><div class="note">zwakste: SEC0 +7,9%</div></div></div>
+<div class="card section">
+<div class="toolbar">
+<div class="ranges" id="plats"><button class="on">Alles</button><button class="">Revolut</button><button class="">MeDirect</button><button class="">Crypto</button></div>
+<div class="ranges" id="ranges"><button class="on">1J</button></div>
+</div>
+<div class="legend"><span><i class="sw"></i>Waarde</span><span><i class="sw ref"></i>Netto ingelegd</span></div>
+<div id="chart"><svg viewBox="0 0 1024 280" width="100%"><line stroke="var(--grid)" x1="58" x2="1012" y1="254" y2="254"></line><text class="blur" text-anchor="end" x="50" y="258">€0</text><line stroke="var(--grid)" x1="58" x2="1012" y1="193.5" y2="193.5"></line><text class="blur" text-anchor="end" x="50" y="197.5">€0.000</text><line stroke="var(--grid)" x1="58" x2="1012" y1="133" y2="133"></line><text class="blur" text-anchor="end" x="50" y="137">€0.000</text><line stroke="var(--grid)" x1="58" x2="1012" y1="72.5" y2="72.5"></line><text class="blur" text-anchor="end" x="50" y="76.5">€0.000</text><line stroke="var(--grid)" x1="58" x2="1012" y1="12" y2="12"></line><text class="blur" text-anchor="end" x="50" y="16">€0.000</text><text text-anchor="start" x="58" y="274">okt 25</text><text text-anchor="middle" x="249.32417582417582" y="274">jan 26</text><text text-anchor="middle" x="440.64835164835165" y="274">mrt 26</text><text text-anchor="middle" x="629.3516483516484" y="274">mei 26</text><text text-anchor="middle" x="820.6758241758242" y="274">aug 26</text><text text-anchor="end" x="1012" y="274">okt 26</text>
+<path d="M58.0,215.7L60.6,215.7L63.2,214.9L65.9,214.8L68.5,214.5L71.1,214.5L73.7,214.5L76.3,214.5L79.0,214.5L81.6,214.4L84.2,214.7L86.8,214.6L89.5,215.3L92.1,216.1L94.7,216.1L97.3,216.1L99.9,215.0L102.6,215.0L105.2,214.7L107.8,215.4L110.4,215.5L113.0,215.5L115.7,215.5L118.3,215.7L120.9,216.3L123.5,216.1L126.1,215.9L128.8,216.6L131.4,216.6L134.0,216.6L136.6,215.9L139.2,216.0L141.9,215.3L144.5,215.3L147.1,215.0L149.7,215.0L152.4,215.0L155.0,215.2L157.6,215.1L160.2,215.0L162.8,214.9L165.5,214.7L168.1,214.7L170.7,214.7L173.3,214.7L175.9,214.6L178.6,214.7L181.2,215.0L183.8,215.4L186.4,215.4L189.0,215.4L191.7,215.4L194.3,215.8L196.9,216.1L199.5,215.6L202.1,215.3L204.8,215.3L207.4,215.3L210.0,215.1L212.6,215.0L215.3,215.0L217.9,215.0L220.5,215.0L223.1,215.0L225.7,215.0L228.4,214.8L231.0,214.7L233.6,214.7L236.2,214.7L238.8,214.6L241.5,214.6L244.1,214.6L246.7,213.9L249.3,213.6L251.9,213.5L254.6,213.8L257.2,213.2L259.8,213.2L262.4,213.2L265.0,213.2L267.7,213.0L270.3,213.3L272.9,212.5L275.5,212.6L278.2,212.6L280.8,212.6L283.4,213.2L286.0,213.4L288.6,213.2L291.3,212.9L293.9,213.1L296.5,213.1L299.1,213.1L301.7,213.3L304.4,213.1L307.0,212.8L309.6,213.3L312.2,212.9L314.8,212.9L317.5,212.9L320.1,212.6L322.7,212.9L325.3,213.5L328.0,213.8L330.6,213.1L333.2,213.1L335.8,213.1L338.4,212.8L341.1,212.9L343.7,212.7L346.3,213.1L348.9,213.1L351.5,213.1L354.2,213.1L356.8,213.2L359.4,213.0L362.0,212.4L364.6,212.6L367.3,212.4L369.9,212.4L372.5,212.4L375.1,212.7L377.7,212.2L380.4,211.9L383.0,212.2L385.6,212.5L388.2,212.5L390.9,212.5L393.5,212.4L396.1,213.1L398.7,212.5L401.3,212.7L404.0,212.7L406.6,212.7L409.2,212.7L411.8,213.6L414.4,212.7L417.1,212.7L419.7,213.2L422.3,213.2L424.9,213.2L427.5,213.2L430.2,212.9L432.8,212.9L435.4,212.9L438.0,213.6L440.6,214.1L443.3,214.1L445.9,214.1L448.5,213.9L451.1,213.8L453.8,213.4L456.4,214.2L459.0,214.8L461.6,214.8L464.2,214.8L466.9,214.9L469.5,215.0L472.1,213.7L474.7,213.8L477.3,213.8L480.0,213.8L482.6,213.8L485.2,213.8L487.8,213.9L490.4,212.4L493.1,212.1L495.7,211.7L498.3,211.7L500.9,211.7L503.5,211.7L506.2,211.1L508.8,210.9L511.4,210.5L514.0,192.8L516.7,192.8L519.3,192.8L521.9,193.0L524.5,192.9L527.1,192.4L529.8,193.8L532.4,191.5L535.0,193.3L537.6,196.4L540.2,196.5L542.9,197.1L545.5,199.6L548.1,199.1L550.7,199.1L553.3,196.1L556.0,199.1L558.6,193.5L561.2,192.3L563.8,191.2L566.5,192.1L569.1,192.4L571.7,192.8L574.3,192.8L576.9,192.0L579.6,193.4L582.2,192.0L584.8,191.1L587.4,192.1L590.0,192.1L592.7,192.1L595.3,192.9L597.9,193.5L600.5,192.1L603.1,191.9L605.8,190.6L608.4,190.6L611.0,190.6L613.6,189.8L616.2,189.5L618.9,189.8L621.5,189.1L624.1,189.1L626.7,189.1L629.4,189.1L632.0,173.6L634.6,172.5L637.2,172.0L639.8,172.9L642.5,174.8L645.1,174.8L647.7,174.8L650.3,174.6L652.9,176.2L655.6,176.5L658.2,175.6L660.8,170.0L663.4,170.0L666.0,170.0L668.7,171.3L671.3,172.1L673.9,109.3L676.5,106.6L679.1,106.2L681.8,106.2L684.4,106.2L687.0,104.8L689.6,109.0L692.3,108.6L694.9,107.8L697.5,109.5L700.1,109.5L702.7,109.5L705.4,109.4L708.0,105.7L710.6,107.2L713.2,110.6L715.8,109.2L718.5,109.2L721.1,109.2L723.7,108.7L726.3,113.3L728.9,113.1L731.6,109.3L734.2,109.7L736.8,109.7L739.4,109.7L742.0,110.8L744.7,110.6L747.3,111.9L749.9,113.2L752.5,115.8L755.2,115.8L757.8,115.8L760.4,114.5L763.0,112.3L765.6,111.8L768.3,113.6L770.9,114.2L773.5,114.2L776.1,114.2L778.7,117.1L781.4,118.3L784.0,120.5L786.6,118.8L789.2,118.1L791.8,118.1L794.5,118.1L797.1,116.8L799.7,112.7L802.3,112.6L805.0,112.7L807.6,112.5L810.2,112.5L812.8,112.5L815.4,112.8L818.1,112.7L820.7,111.1L823.3,109.6L825.9,111.4L828.5,111.4L831.2,111.4L833.8,109.7L836.4,113.9L839.0,115.0L841.6,115.8L844.3,115.3L846.9,115.3L849.5,115.3L852.1,116.9L854.7,115.8L857.4,115.5L860.0,114.6L862.6,113.8L865.2,113.8L867.9,121.6L870.5,123.5L873.1,123.7L875.7,123.5L878.3,123.1L881.0,122.0L883.6,122.0L886.2,122.0L888.8,120.9L891.4,120.4L894.1,121.5L896.7,122.7L899.3,121.1L901.9,121.1L904.5,121.1L907.2,123.9L909.8,124.2L912.4,122.9L915.0,121.2L917.6,120.6L920.3,120.6L922.9,120.6L925.5,117.1L928.1,115.7L930.8,116.0L933.4,117.2L936.0,115.8L938.6,115.8L941.2,115.8L943.9,116.9L946.5,115.4L949.1,115.2L951.7,114.7L954.3,112.0L957.0,112.0L959.6,112.0L962.2,111.0L964.8,110.6L967.4,111.6L970.1,112.5L972.7,113.1L975.3,113.1L977.9,113.1L980.5,113.9L983.2,115.8L985.8,116.0L988.4,103.9L991.0,64.2L993.7,64.2L996.3,64.1L998.9,62.9L1001.5,63.9L1004.1,62.2L1006.8,67.5L1009.4,67.5L1012.0,67.6L1012,254L58,254Z" fill="var(--s1-fill)"></path>
+<path d="M58.0,221.8L60.6,221.8L63.2,221.8L65.9,221.8L68.5,221.8L71.1,221.8L73.7,221.8L76.3,221.8L79.0,221.8L81.6,221.8L84.2,221.8L86.8,221.8L89.5,221.8L92.1,221.8L94.7,221.8L97.3,221.8L99.9,221.8L102.6,221.8L105.2,221.8L107.8,221.8L110.4,221.8L113.0,221.8L115.7,221.8L118.3,221.8L120.9,221.8L123.5,221.8L126.1,221.8L128.8,221.8L131.4,221.8L134.0,221.8L136.6,221.8L139.2,221.8L141.9,221.8L144.5,221.8L147.1,221.8L149.7,221.8L152.4,221.8L155.0,221.8L157.6,221.8L160.2,221.8L162.8,221.8L165.5,221.8L168.1,221.8L170.7,221.8L173.3,221.8L175.9,221.8L178.6,221.8L181.2,221.8L183.8,221.8L186.4,221.8L189.0,221.8L191.7,221.8L194.3,221.8L196.9,221.8L199.5,221.8L202.1,221.8L204.8,221.8L207.4,221.8L210.0,221.8L212.6,221.8L215.3,221.8L217.9,221.8L220.5,221.8L223.1,221.8L225.7,221.8L228.4,221.8L231.0,221.8L233.6,221.8L236.2,221.8L238.8,221.8L241.5,221.8L244.1,221.8L246.7,221.8L249.3,221.8L251.9,221.8L254.6,221.8L257.2,221.8L259.8,221.8L262.4,221.8L265.0,221.8L267.7,221.8L270.3,221.8L272.9,221.8L275.5,221.8L278.2,221.8L280.8,221.8L283.4,221.8L286.0,221.8L288.6,221.8L291.3,221.8L293.9,221.8L296.5,221.8L299.1,221.8L301.7,221.8L304.4,221.8L307.0,221.8L309.6,221.8L312.2,221.8L314.8,221.8L317.5,221.8L320.1,221.8L322.7,221.8L325.3,221.8L328.0,221.8L330.6,221.8L333.2,221.8L335.8,221.8L338.4,221.8L341.1,221.8L343.7,221.8L346.3,221.8L348.9,221.8L351.5,221.8L354.2,221.8L356.8,221.8L359.4,221.8L362.0,221.8L364.6,221.8L367.3,221.8L369.9,221.8L372.5,221.8L375.1,221.8L377.7,221.8L380.4,221.8L383.0,221.8L385.6,221.8L388.2,221.8L390.9,221.8L393.5,221.8L396.1,221.8L398.7,221.8L401.3,221.8L404.0,221.8L406.6,221.8L409.2,221.8L411.8,221.8L414.4,221.8L417.1,221.8L419.7,221.8L422.3,221.8L424.9,221.8L427.5,221.8L430.2,221.8L432.8,221.8L435.4,221.8L438.0,221.8L440.6,221.8L443.3,221.8L445.9,221.8L448.5,221.8L451.1,221.8L453.8,221.8L456.4,221.8L459.0,221.8L461.6,221.8L464.2,221.8L466.9,221.8L469.5,221.8L472.1,221.8L474.7,221.8L477.3,221.8L480.0,221.8L482.6,221.8L485.2,221.8L487.8,221.8L490.4,221.8L493.1,221.8L495.7,221.8L498.3,221.8L500.9,221.8L503.5,221.8L506.2,221.8L508.8,221.8L511.4,221.8L514.0,204.7L516.7,204.7L519.3,204.7L521.9,204.7L524.5,204.7L527.1,204.7L529.8,206.5L532.4,204.7L535.0,206.5L537.6,209.5L540.2,209.5L542.9,209.5L545.5,212.5L548.1,212.5L550.7,212.5L553.3,209.5L556.0,212.5L558.6,207.4L561.2,207.4L563.8,207.4L566.5,208.3L569.1,209.2L571.7,209.7L574.3,209.7L576.9,209.7L579.6,209.7L582.2,209.7L584.8,209.7L587.4,209.7L590.0,209.7L592.7,209.7L595.3,209.7L597.9,209.7L600.5,209.7L603.1,209.7L605.8,209.7L608.4,209.7L611.0,209.7L613.6,209.7L616.2,209.7L618.9,209.7L621.5,209.7L624.1,209.7L626.7,209.7L629.4,209.7L632.0,194.5L634.6,194.5L637.2,194.5L639.8,194.5L642.5,194.5L645.1,194.5L647.7,194.5L650.3,194.5L652.9,194.5L655.6,194.5L658.2,194.5L660.8,191.6L663.4,191.6L666.0,191.6L668.7,194.6L671.3,194.6L673.9,132.4L676.5,132.4L679.1,132.4L681.8,132.4L684.4,132.4L687.0,132.4L689.6,132.4L692.3,132.4L694.9,132.4L697.5,132.4L700.1,132.4L702.7,132.4L705.4,132.4L708.0,132.4L710.6,132.4L713.2,132.4L715.8,132.4L718.5,132.4L721.1,132.4L723.7,132.4L726.3,132.4L728.9,132.4L731.6,132.4L734.2,132.4L736.8,132.4L739.4,132.4L742.0,132.4L744.7,132.4L747.3,132.4L749.9,132.4L752.5,132.4L755.2,132.4L757.8,132.4L760.4,132.4L763.0,132.4L765.6,132.4L768.3,132.4L770.9,132.4L773.5,132.4L776.1,132.4L778.7,132.4L781.4,132.4L784.0,132.4L786.6,132.4L789.2,132.4L791.8,132.4L794.5,132.4L797.1,132.4L799.7,132.4L802.3,132.4L805.0,132.4L807.6,132.4L810.2,132.4L812.8,132.4L815.4,132.4L818.1,132.4L820.7,132.4L823.3,132.4L825.9,132.4L828.5,132.4L831.2,132.4L833.8,132.4L836.4,132.4L839.0,132.4L841.6,132.4L844.3,132.4L846.9,132.4L849.5,132.4L852.1,132.4L854.7,132.4L857.4,132.4L860.0,132.4L862.6,132.4L865.2,132.4L867.9,140.2L870.5,140.2L873.1,140.2L875.7,140.2L878.3,140.2L881.0,140.2L883.6,140.2L886.2,140.2L888.8,140.2L891.4,140.2L894.1,140.2L896.7,140.2L899.3,140.2L901.9,140.2L904.5,140.2L907.2,140.2L909.8,140.2L912.4,140.2L915.0,140.2L917.6,140.2L920.3,140.2L922.9,140.2L925.5,140.2L928.1,140.2L930.8,140.2L933.4,140.2L936.0,140.2L938.6,140.2L941.2,140.2L943.9,140.2L946.5,140.2L949.1,140.2L951.7,140.2L954.3,140.2L957.0,140.2L959.6,140.2L962.2,140.2L964.8,140.2L967.4,140.2L970.1,140.2L972.7,140.2L975.3,140.2L977.9,140.2L980.5,140.2L983.2,140.2L985.8,140.2L988.4,125.1L991.0,76.9L993.7,76.9L996.3,76.9L998.9,76.9L1001.5,76.9L1004.1,76.9L1006.8,76.9L1009.4,76.9L1012.0,76.9" fill="none" stroke="var(--ref)" stroke-dasharray="4 4" stroke-width="1.5"></path>
+<path d="M58.0,215.7L60.6,215.7L63.2,214.9L65.9,214.8L68.5,214.5L71.1,214.5L73.7,214.5L76.3,214.5L79.0,214.5L81.6,214.4L84.2,214.7L86.8,214.6L89.5,215.3L92.1,216.1L94.7,216.1L97.3,216.1L99.9,215.0L102.6,215.0L105.2,214.7L107.8,215.4L110.4,215.5L113.0,215.5L115.7,215.5L118.3,215.7L120.9,216.3L123.5,216.1L126.1,215.9L128.8,216.6L131.4,216.6L134.0,216.6L136.6,215.9L139.2,216.0L141.9,215.3L144.5,215.3L147.1,215.0L149.7,215.0L152.4,215.0L155.0,215.2L157.6,215.1L160.2,215.0L162.8,214.9L165.5,214.7L168.1,214.7L170.7,214.7L173.3,214.7L175.9,214.6L178.6,214.7L181.2,215.0L183.8,215.4L186.4,215.4L189.0,215.4L191.7,215.4L194.3,215.8L196.9,216.1L199.5,215.6L202.1,215.3L204.8,215.3L207.4,215.3L210.0,215.1L212.6,215.0L215.3,215.0L217.9,215.0L220.5,215.0L223.1,215.0L225.7,215.0L228.4,214.8L231.0,214.7L233.6,214.7L236.2,214.7L238.8,214.6L241.5,214.6L244.1,214.6L246.7,213.9L249.3,213.6L251.9,213.5L254.6,213.8L257.2,213.2L259.8,213.2L262.4,213.2L265.0,213.2L267.7,213.0L270.3,213.3L272.9,212.5L275.5,212.6L278.2,212.6L280.8,212.6L283.4,213.2L286.0,213.4L288.6,213.2L291.3,212.9L293.9,213.1L296.5,213.1L299.1,213.1L301.7,213.3L304.4,213.1L307.0,212.8L309.6,213.3L312.2,212.9L314.8,212.9L317.5,212.9L320.1,212.6L322.7,212.9L325.3,213.5L328.0,213.8L330.6,213.1L333.2,213.1L335.8,213.1L338.4,212.8L341.1,212.9L343.7,212.7L346.3,213.1L348.9,213.1L351.5,213.1L354.2,213.1L356.8,213.2L359.4,213.0L362.0,212.4L364.6,212.6L367.3,212.4L369.9,212.4L372.5,212.4L375.1,212.7L377.7,212.2L380.4,211.9L383.0,212.2L385.6,212.5L388.2,212.5L390.9,212.5L393.5,212.4L396.1,213.1L398.7,212.5L401.3,212.7L404.0,212.7L406.6,212.7L409.2,212.7L411.8,213.6L414.4,212.7L417.1,212.7L419.7,213.2L422.3,213.2L424.9,213.2L427.5,213.2L430.2,212.9L432.8,212.9L435.4,212.9L438.0,213.6L440.6,214.1L443.3,214.1L445.9,214.1L448.5,213.9L451.1,213.8L453.8,213.4L456.4,214.2L459.0,214.8L461.6,214.8L464.2,214.8L466.9,214.9L469.5,215.0L472.1,213.7L474.7,213.8L477.3,213.8L480.0,213.8L482.6,213.8L485.2,213.8L487.8,213.9L490.4,212.4L493.1,212.1L495.7,211.7L498.3,211.7L500.9,211.7L503.5,211.7L506.2,211.1L508.8,210.9L511.4,210.5L514.0,192.8L516.7,192.8L519.3,192.8L521.9,193.0L524.5,192.9L527.1,192.4L529.8,193.8L532.4,191.5L535.0,193.3L537.6,196.4L540.2,196.5L542.9,197.1L545.5,199.6L548.1,199.1L550.7,199.1L553.3,196.1L556.0,199.1L558.6,193.5L561.2,192.3L563.8,191.2L566.5,192.1L569.1,192.4L571.7,192.8L574.3,192.8L576.9,192.0L579.6,193.4L582.2,192.0L584.8,191.1L587.4,192.1L590.0,192.1L592.7,192.1L595.3,192.9L597.9,193.5L600.5,192.1L603.1,191.9L605.8,190.6L608.4,190.6L611.0,190.6L613.6,189.8L616.2,189.5L618.9,189.8L621.5,189.1L624.1,189.1L626.7,189.1L629.4,189.1L632.0,173.6L634.6,172.5L637.2,172.0L639.8,172.9L642.5,174.8L645.1,174.8L647.7,174.8L650.3,174.6L652.9,176.2L655.6,176.5L658.2,175.6L660.8,170.0L663.4,170.0L666.0,170.0L668.7,171.3L671.3,172.1L673.9,109.3L676.5,106.6L679.1,106.2L681.8,106.2L684.4,106.2L687.0,104.8L689.6,109.0L692.3,108.6L694.9,107.8L697.5,109.5L700.1,109.5L702.7,109.5L705.4,109.4L708.0,105.7L710.6,107.2L713.2,110.6L715.8,109.2L718.5,109.2L721.1,109.2L723.7,108.7L726.3,113.3L728.9,113.1L731.6,109.3L734.2,109.7L736.8,109.7L739.4,109.7L742.0,110.8L744.7,110.6L747.3,111.9L749.9,113.2L752.5,115.8L755.2,115.8L757.8,115.8L760.4,114.5L763.0,112.3L765.6,111.8L768.3,113.6L770.9,114.2L773.5,114.2L776.1,114.2L778.7,117.1L781.4,118.3L784.0,120.5L786.6,118.8L789.2,118.1L791.8,118.1L794.5,118.1L797.1,116.8L799.7,112.7L802.3,112.6L805.0,112.7L807.6,112.5L810.2,112.5L812.8,112.5L815.4,112.8L818.1,112.7L820.7,111.1L823.3,109.6L825.9,111.4L828.5,111.4L831.2,111.4L833.8,109.7L836.4,113.9L839.0,115.0L841.6,115.8L844.3,115.3L846.9,115.3L849.5,115.3L852.1,116.9L854.7,115.8L857.4,115.5L860.0,114.6L862.6,113.8L865.2,113.8L867.9,121.6L870.5,123.5L873.1,123.7L875.7,123.5L878.3,123.1L881.0,122.0L883.6,122.0L886.2,122.0L888.8,120.9L891.4,120.4L894.1,121.5L896.7,122.7L899.3,121.1L901.9,121.1L904.5,121.1L907.2,123.9L909.8,124.2L912.4,122.9L915.0,121.2L917.6,120.6L920.3,120.6L922.9,120.6L925.5,117.1L928.1,115.7L930.8,116.0L933.4,117.2L936.0,115.8L938.6,115.8L941.2,115.8L943.9,116.9L946.5,115.4L949.1,115.2L951.7,114.7L954.3,112.0L957.0,112.0L959.6,112.0L962.2,111.0L964.8,110.6L967.4,111.6L970.1,112.5L972.7,113.1L975.3,113.1L977.9,113.1L980.5,113.9L983.2,115.8L985.8,116.0L988.4,103.9L991.0,64.2L993.7,64.2L996.3,64.1L998.9,62.9L1001.5,63.9L1004.1,62.2L1006.8,67.5L1009.4,67.5L1012.0,67.6" fill="none" stroke="var(--s1)" stroke-linejoin="round" stroke-width="2"></path>
+<line id="xh" opacity="0" stroke="var(--muted)" stroke-dasharray="2 3" y1="12" y2="254"></line>
+<circle fill="var(--s1)" id="dot" opacity="0" r="4.5" stroke="var(--surface)" stroke-width="2"></circle>
+<rect fill="transparent" height="280" width="954" x="58" y="0"></rect></svg></div>
+<div class="sub" id="periodNote">Sinds 25/10/2025:<span class="blur"> €0.000</span> →<span class="blur"> €0.000</span>, waarvan<span class="blur"> €0.000</span> nieuwe inleg en <b class="pos"><span class="blur">+€000</span></b> koerswinst. <span class="sub">MeDirect vanaf 16/10/2026, Crypto vanaf 16/10/2026: geschat met je huidige aantal × de koers van die dag.</span></div>
+</div>
+<div class="card section">
+<h2>Posities nu</h2>
+<table><thead><tr><th>Positie</th><th class="num hide-s">Aantal</th><th class="num hide-s">Koers</th><th class="num">Waarde</th>
+<th class="num hide-s">Aankoop</th><th class="num">Winst / verlies</th><th class="hide-s">Aandeel</th></tr></thead><tbody id="positions"><tr><td><b>SEC0</b><div class="sub">iShares MSCI Global Semiconductors UCITS ETF USD Acc</div></td>
+<td class="num hide-s"><span class="blur">000,0000</span></td><td class="num hide-s"><span class="blur">€00,00</span></td>
+<td class="num"><b><span class="blur">€0.000,00</span></b></td><td class="num hide-s"><span class="blur">€0.000,00</span></td>
+<td class="num pos"><span class="blur">+€000,00</span><div class="sub">+7,9%</div></td>
+<td class="hide-s"><div style="display:flex;align-items:center;gap:8px"><div class="share" style="flex:1"><div style="width:41.153196590649415%"></div></div><span class="sub">41%</span></div></td></tr><tr><td><b>EUNL</b><div class="sub">iShares Core MSCI World UCITS ETF USD (Acc)</div></td>
+<td class="num hide-s"><span class="blur">00,0000</span></td><td class="num hide-s"><span class="blur">€000,00</span></td>
+<td class="num"><b><span class="blur">€0.000,00</span></b></td><td class="num hide-s"><span class="blur">€0.000,00</span></td>
+<td class="num pos"><span class="blur">+€000,00</span><div class="sub">+20,3%</div></td>
+<td class="hide-s"><div style="display:flex;align-items:center;gap:8px"><div class="share" style="flex:1"><div style="width:35.574189993341435%"></div></div><span class="sub">36%</span></div></td></tr><tr><td><b>VUAA</b><div class="sub">Vanguard S&amp;P 500 UCITS ETF USD Accumulation</div></td>
+<td class="num hide-s"><span class="blur">0,0000</span></td><td class="num hide-s"><span class="blur">€000,00</span></td>
+<td class="num"><b><span class="blur">€0.000,00</span></b></td><td class="num hide-s"><span class="blur">€000,00</span></td>
+<td class="num pos"><span class="blur">+€000,00</span><div class="sub">+14,7%</div></td>
+<td class="hide-s"><div style="display:flex;align-items:center;gap:8px"><div class="share" style="flex:1"><div style="width:23.27261341600916%"></div></div><span class="sub">23%</span></div></td></tr></tbody></table>
+</div>
+<div class="grid row2 section">
+<div class="card">
+<h2>Andere platformen</h2>
+<div id="other"><table><thead><tr><th>Positie</th><th class="num">Aantal</th><th class="num">Waarde</th></tr></thead><tbody><tr><td><b>IMAE</b> <span class="sub">MeDirect</span><div class="sub">iShares Core MSCI Europe UCITS ETF EUR (Acc)</div></td>
+<td class="num">9</td><td class="num"><span class="blur">€000,00</span></td></tr><tr><td><b>BTC</b> <span class="sub">OKX</span><div class="sub">Bitcoin</div></td>
+<td class="num"><span class="blur">0,00000000</span></td><td class="num"><span class="blur">€000,00</span></td></tr><tr><td><b>PEPE</b> <span class="sub">OKX</span><div class="sub">Pepe</div></td>
+<td class="num"><span class="blur">00.000.000,00000</span></td><td class="num"><span class="blur">€00,00</span></td></tr></tbody></table><div class="sub" style="margin-top:8px">Via ING kocht je voor<span class="blur"> €000,00</span> crypto bij OKX (nu<span class="blur"> €000,00</span>). Historiek van deze platformen bouwt zich op vanaf 16/10/2026 (dagelijkse momentopname).</div></div>
+</div>
+<div class="card">
+<h2>Afgesloten posities</h2>
+<div id="closed"><table><thead><tr><th>Aandeel</th><th class="hide-s">Periode</th><th class="num">Ingelegd</th><th class="num">Resultaat</th></tr></thead><tbody><tr><td>AAPL</td><td class="hide-s sub">13/10/2023 – 15/12/2023</td><td class="num"><span class="blur">€0,00</span></td>
+<td class="num neg"><span class="blur">−€0,00</span></td></tr><tr><td>TSLA</td><td class="hide-s sub">26/01/2024 – 13/02/2024</td><td class="num"><span class="blur">€00,00</span></td>
+<td class="num pos"><span class="blur">+€0,00</span></td></tr><tr><td>V</td><td class="hide-s sub">03/04/2024 – 04/06/2024</td><td class="num"><span class="blur">€00,00</span></td>
+<td class="num pos"><span class="blur">+€0,00</span></td></tr><tr><td>GME</td><td class="hide-s sub">03/06/2024 – 27/10/2025</td><td class="num"><span class="blur">€00,00</span></td>
+<td class="num neg"><span class="blur">−€00,00</span></td></tr><tr><td>CRWD</td><td class="hide-s sub">19/07/2024 – 14/10/2024</td><td class="num"><span class="blur">€00,00</span></td>
+<td class="num neg"><span class="blur">−€0,00</span></td></tr><tr><td>BX7</td><td class="hide-s sub">09/10/2024 – 28/04/2025</td><td class="num"><span class="blur">€000,00</span></td>
+<td class="num pos"><span class="blur">+€0,00</span></td></tr><tr><td>PRAB</td><td class="hide-s sub">27/01/2025 – 15/04/2025</td><td class="num"><span class="blur">€000,00</span></td>
+<td class="num pos"><span class="blur">+€0,00</span></td></tr><tr><td>ARGX</td><td class="hide-s sub">08/05/2025 – 13/05/2025</td><td class="num"><span class="blur">€00,00</span></td>
+<td class="num neg"><span class="blur">−€0,00</span></td></tr><tr><td>SPCX</td><td class="hide-s sub">12/06/2026 – 12/06/2026</td><td class="num"><span class="blur">€00,00</span></td>
+<td class="num pos"><span class="blur">+€0,00</span></td></tr><tr><td><b>Totaal</b></td><td class="hide-s"></td><td></td><td class="num neg"><b><span class="blur">−€00,00</span></b></td></tr></tbody></table></div>
+</div>
+</div>
+</div>
+<div id="tip"></div>
+
+</body></html>
