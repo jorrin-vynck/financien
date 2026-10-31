@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html lang="nl"><head><meta content="noindex, nofollow" name="robots"/><link href="/financien/favicon.png?v=2" rel="icon" sizes="64x64" type="image/png"/><link href="/financien/favicon-32.png?v=2" rel="icon" sizes="32x32" type="image/png"/><link href="/financien/favicon.png?v=2" rel="shortcut icon"/><link href="/financien/apple-touch-icon.png?v=2" rel="apple-touch-icon"/>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Mijn financiën</title>
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f6f6f4; --surface: #ffffff; --border: #ececea;
+  --text: #111111; --text-2: #5c5c58; --muted: #9a9a95; --grid: #f0f0ee;
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+  --pos: #1f8f4e; --neg: #d14343; --in: #2ea05c; --out: #e0524f; --hover: rgba(0,0,0,.035);
+  --revolut: #111111; --ing: #ff6200; --crelan: #4f8f24;
+  --shadow: 0 1px 2px rgba(0,0,0,.04), 0 4px 16px rgba(0,0,0,.035);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0e0e0e; --surface: #181818; --border: #262626;
+    --text: #f2f2f0; --text-2: #b8b8b2; --muted: #85857f; --grid: #232323;
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+    --pos: #4cc27a; --neg: #ef6b6b; --in: #3fb56f; --out: #ec6461; --hover: rgba(255,255,255,.05);
+    --revolut: #000000; --ing: #f05a00; --crelan: #4a8a21;
+    --shadow: 0 0 0 1px #242424;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text);
+  font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 32px 16px 72px; }
+header { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+h1 { font-size: 26px; font-weight: 650; margin: 0; letter-spacing: -.02em; }
+h2 { font-size: 15px; font-weight: 600; color: var(--text); margin: 0 0 14px; letter-spacing: -.005em; }
+.sub { color: var(--muted); font-size: 12.5px; }
+.card { background: var(--surface); border: 0; border-radius: 18px; padding: 22px; box-shadow: var(--shadow); }
+.grid { display: grid; gap: 14px; }
+.tiles { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.tile .label { color: var(--muted); font-size: 12.5px; }
+.tile .value { font-size: 24px; font-weight: 600; font-variant-numeric: tabular-nums; margin-top: 4px; letter-spacing: -.01em; }
+.tile .note { color: var(--muted); font-size: 12px; margin-top: 2px; }
+.tile.hero .value { font-size: 30px; }
+.tile.hero { grid-column: span 2; }
+@media (max-width: 560px) { .tile.hero { grid-column: auto; } }
+.row2 { grid-template-columns: 1.4fr 1fr; margin-top: 12px; }
+@media (max-width: 820px) { .row2 { grid-template-columns: 1fr; } }
+.section { margin-top: 36px; }
+.toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+select, input[type=search] { font: inherit; color: var(--text); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; }
+input[type=search] { min-width: 220px; flex: 1; }
+.chip { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--border); border-radius: 999px;
+  padding: 3px 10px; font-size: 12px; background: var(--surface); cursor: pointer; color: var(--text); }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--text-2); margin-bottom: 6px; }
+.sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 5px; vertical-align: -1px; }
+svg text { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+.bar { cursor: pointer; }
+.cat-row { display: grid; grid-template-columns: 150px 1fr 80px; gap: 10px; align-items: center; padding: 5px 4px;
+  border-radius: 6px; cursor: pointer; }
+.cat-row:hover, .cat-row.active { background: var(--hover); }
+.cat-row .name { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cat-row .track { height: 10px; position: relative; }
+.cat-row .fill { height: 10px; border-radius: 0 4px 4px 0; background: var(--s1); }
+.cat-row .avg { position: absolute; top: -3px; width: 2px; height: 16px; background: var(--text-2); opacity: .5; }
+.cat-row .amt { text-align: right; font-variant-numeric: tabular-nums; font-size: 13px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { text-align: left; font-weight: 600; color: var(--text-2); font-size: 12px; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+td { padding: 7px 8px; border-bottom: 1px solid var(--grid); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pos { color: var(--pos); }
+.tag { font-size: 11px; color: var(--text-2); border: 1px solid var(--border); border-radius: 999px; padding: 1px 8px; white-space: nowrap; }
+.tablewrap { max-height: 520px; overflow: auto; }
+#tip { position: fixed; pointer-events: none; background: var(--text); color: var(--surface); padding: 6px 10px;
+  border-radius: 8px; font-size: 12px; line-height: 1.4; opacity: 0; transition: opacity .1s; z-index: 10; }
+.meter { height: 10px; background: var(--grid); border-radius: 999px; overflow: hidden; margin: 6px 0 4px; }
+.meter > div { height: 100%; border-radius: 999px; background: var(--s1); }
+.meter.over > div { background: var(--neg); }
+.bline { display: flex; justify-content: space-between; font-size: 13px; }
+.bblock { margin-bottom: 16px; }
+.neg { color: var(--neg); }
+.empty { color: var(--muted); font-size: 13px; padding: 8px 0; }
+.sechead { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.sechead h2 { margin: 0; }
+.banks { grid-template-columns: repeat(3, 1fr); }
+@media (max-width: 760px) { .banks { grid-template-columns: 1fr; } }
+.bank { background: var(--bc); color: #fff; position: relative; box-shadow: none; }
+.bank .brole, .bank .bfoot { color: rgba(255,255,255,.72) !important; }
+.bank .bsub { border-top-color: rgba(255,255,255,.18) !important; }
+.bank .bdot { background: #fff !important; }
+.bank .bname { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; }
+.bank .bdot { width: 10px; height: 10px; border-radius: 50%; background: var(--bc); }
+.bank .bbal { font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; margin: 6px 0 2px; letter-spacing: -.01em; }
+.bank .brole { color: var(--text-2); font-size: 12px; min-height: 34px; }
+.bank .bsub { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; border-top: 1px solid var(--grid); }
+.bank .bfoot { color: var(--muted); font-size: 11px; margin-top: 8px; }
+.btn { font: inherit; font-weight: 600; border: 1px solid var(--border); background: var(--text); color: var(--surface);
+  border-radius: 999px; padding: 7px 16px; cursor: pointer; }
+.btn:disabled { background: var(--grid); color: var(--muted); cursor: not-allowed; }
+.refresh { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.worth-top { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px; }
+.worth-big { font-size: 36px; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.stack { display: flex; gap: 2px; height: 14px; margin: 14px 0 16px; }
+.stack > div { height: 100%; }
+.stack > div:first-child { border-radius: 4px 0 0 4px; } .stack > div:last-child { border-radius: 0 4px 4px 0; }
+.wgroups { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+@media (max-width: 760px) { .wgroups { grid-template-columns: 1fr 1fr; } }
+.wg .wgh { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); }
+.wg .wgv { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; margin: 2px 0 6px; }
+.wg .wgi { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-2); padding: 2px 0; }
+.navlink { color: var(--s1); text-decoration: none; font-weight: 600; }
+.recv-total { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.recv-row { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; padding: 8px 0; border-bottom: 1px solid var(--grid); }
+.recv-row:last-child { border-bottom: 0; }
+.recv-row .rd { color: var(--muted); font-size: 12px; }
+.recv-row .ra { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+.est { font-size: 10px; color: var(--text-2); border: 1px solid var(--border); border-radius: 999px; padding: 0 6px; margin-left: 6px; font-weight: 500; }
+.pots { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px 22px; }
+@media (max-width: 900px) { .pots { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .pots { grid-template-columns: 1fr; } }
+.seg-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; padding: 2px; }
+.seg-toggle button { font: inherit; font-size: 12px; border: 0; background: transparent; color: var(--text-2); padding: 3px 12px; border-radius: 999px; cursor: pointer; }
+.seg-toggle button.on { background: var(--text); color: var(--surface); }
+.navbtn { font: inherit; border: 1px solid var(--border); background: var(--surface); color: var(--text); border-radius: 999px; width: 26px; height: 26px; cursor: pointer; margin: 0 6px; }
+.navbtn:disabled { opacity: .35; cursor: default; }
+.mbar { display: flex; gap: 2px; height: 30px; margin: 4px 0 6px; }
+.mbar .seg { position: relative; height: 100%; background: var(--grid); overflow: hidden; cursor: pointer; }
+.mbar .seg:first-child { border-radius: 6px 0 0 6px; } .mbar .seg:last-child { border-radius: 0 6px 6px 0; }
+.mbar .fill { position: absolute; inset: 0 auto 0 0; background: var(--s1); opacity: .85; }
+.mbar .seg.warn .fill { background: var(--s4); } .mbar .seg.over .fill { background: var(--neg); }
+.mbar .seg.save { background: repeating-linear-gradient(135deg, var(--s3) 0 6px, color-mix(in srgb, var(--s3) 55%, transparent) 6px 12px); }
+.mbar .eat { position: absolute; inset: 0 0 0 auto; background: var(--neg); opacity: .9; }
+.mbar .lbl { position: absolute; left: 6px; top: 50%; transform: translateY(-50%); font-size: 11px; font-weight: 600; color: #fff;
+  white-space: nowrap; text-shadow: 0 1px 2px rgba(0,0,0,.35); pointer-events: none; }
+.mlegend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12px; color: var(--text-2); margin-bottom: 6px; }
+.explain-box { margin: -8px 0 16px; font-size: 13px; }
+.explain-box summary { cursor: pointer; color: var(--s1); font-weight: 600; font-size: 12px; }
+.explain-box td { padding: 4px 8px 4px 0; }
+.mverdict { font-size: 14px; margin: 10px 0 18px; padding: 10px 12px; border-radius: 10px; background: var(--hover); }
+.pot.sink { background: color-mix(in srgb, var(--s3) 7%, transparent); }
+.pot { cursor: pointer; border-radius: 8px; padding: 6px; margin: -6px; }
+.pot:hover { background: var(--hover); }
+.pot .ph { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; }
+.pot .ph b { font-variant-numeric: tabular-nums; }
+.pot .meter { position: relative; overflow: visible; }
+.pot .meter > div { border-radius: 999px; }
+.pot .pace { position: absolute; top: -3px; width: 2px; height: 16px; background: var(--text-2); opacity: .55; }
+.pot.warn .meter > div { background: var(--s4); }
+.pot.over .meter > div { background: var(--neg); }
+.pot.good .meter > div { background: var(--pos); }
+.pot .pn { font-size: 12px; color: var(--muted); }
+.adv { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--grid); font-size: 13px; line-height: 1.45; }
+.adv:last-child { border-bottom: 0; }
+.adv .ai { flex: none; width: 20px; text-align: center; }
+.acc-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+@media (max-width: 560px) { .cat-row { grid-template-columns: 110px 1fr 70px; } td.hide-s, th.hide-s { display: none; } }
+</style>
+<style>
+.blur { filter: blur(5px); -webkit-user-select: none; user-select: none; }
+svg text.blur { filter: blur(2.5px); }
+.public-banner { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px;
+  margin-bottom: 16px; font-size: 13px; color: var(--text-2); display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.public-banner a { color: var(--s1); font-weight: 600; text-decoration: none; }
+svg { max-width: 100%; height: auto; }
+.tablewrap .hide-s { display: table-cell !important; }  /* categorie altijd tonen bij transacties */
+</style></head>
+<body>
+<div class="wrap"><div class="public-banner"><span>Openbare versie: bedragen en namen zijn verborgen.</span><a href="../">Inloggen voor alles →</a></div>
+<header>
+<h1>Mijn financiën</h1>
+<span class="sub"><a class="navlink" href="beleggingen/">Beleggingen</a> · <a class="navlink" href="boodschappen/">Boodschappen</a> · <span id="generated">Bijgewerkt 31/10/2026 07:31</span></span>
+</header>
+<div class="sechead">
+<h2>Saldi</h2>
+<div class="refresh"><span class="sub" id="refreshNote">Stand van 31/10/2026 07:31 · vernieuwen gebeurt op de server (Tailscale nodig)</span></div>
+</div>
+<div class="grid banks" id="banks"><div class="card bank" style="--bc:var(--revolut)">
+<div class="bname"><span class="bdot"></span>Revolut</div>
+<div class="bbal"><span class="blur">€000,00</span></div>
+<div class="brole">Hier spendeer je: kaart, pockets, sparen en beleggen.</div><div class="bsub"><span>Lopende rekening</span><span><span class="blur">€000,00</span></span></div><div class="bsub"><span>Spaarrekening</span><span><span class="blur">€00,00</span></span></div>
+<div class="bfoot">Bijgewerkt 31/10 07:31</div></div><div class="card bank" style="--bc:var(--ing)">
+<div class="bname"><span class="bdot"></span>ING</div>
+<div class="bbal"><span class="blur">€0,00</span></div>
+<div class="brole">Cash storten, terugbetalingen en de huur betalen.</div>
+<div class="bfoot">Bijgewerkt 31/10 07:31</div></div><div class="card bank" style="--bc:var(--crelan)">
+<div class="bname"><span class="bdot"></span>Crelan</div>
+<div class="bbal"><span class="blur">€0,00</span></div>
+<div class="brole">Hier storten je ouders huur-, week- en maandgeld en varia.</div>
+<div class="bfoot">Bijgewerkt 31/10 07:31</div></div></div>
+<div class="card section" id="recvCard">
+<div class="sechead" style="margin-bottom:8px"><h2>Nog te ontvangen</h2><span class="recv-total" id="recvTotal"><span class="blur">€000,00</span></span></div>
+<div id="recv"><div class="recv-row"><div><b>Loon oktober 2026</b><span class="est">schatting</span>
+<div class="rd"><span class="blur">xxx xxxxxxxx xxxxxxxx · xxxxxxxx xx/xx · x xxxxxxxxxxxx xx xxx</span></div></div><div class="ra"><span class="blur">€000,00</span></div></div><div class="recv-row"><div><b>European Sleeper heenreis</b>
+<div class="rd"><span class="blur">xxx xxxxxxxx xxxxxxx · xxxxxxxx xx/xx</span></div></div><div class="ra"><span class="blur">€00,00</span></div></div><div class="recv-row"><div><b>European Sleeper terugreis</b>
+<div class="rd"><span class="blur">xxx xxxxxxxx xxxxxxx · xxxxxxxx xx/xx</span></div></div><div class="ra"><span class="blur">€00,00</span></div></div><div class="recv-row"><div><b>Helft Claude-abonnement</b>
+<div class="rd"><span class="blur">xxx xxxxxx · xxxxxxxx xxxx xxxxx · xxxxxxxxxxxxxx xxxxxxx xxxxxxx xx xx/xxx xxxxxx xxxxxxx xx xxxxx</span></div></div><div class="ra"><span class="blur">€000,00</span></div></div><div class="recv-row"><div><b>Kapper 16/10</b>
+<div class="rd"><span class="blur">xxx xxxxxx · xxxxxxxx xxxx xxxxx</span></div></div><div class="ra"><span class="blur">€00,00</span></div></div><div class="recv-row"><div><b>Ski</b>
+<div class="rd"><span class="blur">xxx xxx · xxxxxxxx xxxx xxxxx</span></div></div><div class="ra"><span class="blur">€00,00</span></div></div><div class="recv-row"><div><b>Kopies 23/10</b>
+<div class="rd"><span class="blur">xxx xxxxxx · xxxxxxxx xxxx xxxxx</span></div></div><div class="ra"><span class="blur">€0,00</span></div></div><div class="recv-row" style="opacity:.6"><div>✓ Loon september 2026<div class="rd"><span class="blur">xxxxxxxxx xx xx/xx</span></div></div>
+<div class="ra"><span class="blur">€000,00</span></div></div></div>
+</div>
+<div class="section">
+<h2>Vermogen</h2>
+<div class="card">
+<div class="worth-top"><div><div class="sub">Totaal vermogen</div><div class="worth-big" id="worthTotal"><span class="blur">€0.000,00</span></div></div><div class="sub" style="text-align:right"><span id="worthNote"><span class="blur">+ €000,00</span> nog te ontvangen · Beleggingen Revolut <span class="blur">+€000</span> t.o.v. aankoop · koersen 31/10 07:31</span><br/><a class="navlink" href="beleggingen/">Verloop van je beleggingen →</a></div></div>
+<div class="stack" id="worthStack"><div style="flex:175.04000000000002;background:var(--s1)"></div><div style="flex:1004.6600000000001;background:var(--s2)"></div><div style="flex:5734.81;background:var(--s3)"></div><div style="flex:418.77;background:var(--s4)"></div></div>
+<div class="wgroups" id="worthGroups"><div class="wg">
+<div class="wgh"><i class="sw" style="background:var(--s1)"></i>Op rekeningen · 2%</div>
+<div class="wgv"><span class="blur">€000,00</span></div>
+<div class="wgi"><span>Revolut</span><span><span class="blur">€000,00</span></span></div><div class="wgi"><span>ING</span><span><span class="blur">€0,00</span></span></div><div class="wgi"><span>Crelan</span><span><span class="blur">€0,00</span></span></div></div><div class="wg">
+<div class="wgh"><i class="sw" style="background:var(--s2)"></i>Spaargeld · 14%</div>
+<div class="wgv"><span class="blur">€0.000,00</span></div>
+<div class="wgi"><span>Spaarrekening</span><span><span class="blur">€00,00</span></span></div><div class="wgi"><span>AB (loon)</span><span><span class="blur">€000,00</span></span></div><div class="wgi"><span>Huur</span><span><span class="blur">€000,00</span></span></div></div><div class="wg">
+<div class="wgh"><i class="sw" style="background:var(--s3)"></i>Beleggingen · 78%</div>
+<div class="wgv"><span class="blur">€0.000,00</span></div>
+<div class="wgi"><span>Revolut</span><span><span class="blur">€0.000,00</span></span></div><div class="wgi"><span>MeDirect IMAE</span><span><span class="blur">€000,00</span></span></div></div><div class="wg">
+<div class="wgh"><i class="sw" style="background:var(--s4)"></i>Crypto · 6%</div>
+<div class="wgv"><span class="blur">€000,00</span></div>
+<div class="wgi"><span>BTC (OKX)</span><span><span class="blur">€000,00</span></span></div><div class="wgi"><span>PEPE (OKX)</span><span><span class="blur">€00,00</span></span></div></div></div>
+</div>
+</div>
+<div class="card" id="worthChartCard" style="margin-top: 12px;">
+<div class="toolbar" style="margin-bottom:6px"><h2 style="margin:0">Vermogen over tijd</h2><div class="legend" id="worthLegend"><span><i class="sw" style="background:var(--s1)"></i>Zichtrekeningen</span><span><i class="sw" style="background:var(--s2)"></i>Spaargeld</span><span><i class="sw" style="background:var(--s3)"></i>Beleggingen</span><span><i class="sw" style="background:var(--s4)"></i>Crypto</span></div>
+<div class="seg-toggle" id="worthStep"><button class="on">Dag</button><button>Week</button></div></div>
+<div id="worthChart"><svg viewBox="0 0 1004 220" width="100%"><line stroke="var(--grid)" x1="56" x2="996" y1="196" y2="196"></line><text class="blur" text-anchor="end" x="50" y="200">€0</text><line stroke="var(--grid)" x1="56" x2="996" y1="149.5" y2="149.5"></line><text class="blur" text-anchor="end" x="50" y="153.5">€0.000</text><line stroke="var(--grid)" x1="56" x2="996" y1="103" y2="103"></line><text class="blur" text-anchor="end" x="50" y="107">€0.000</text><line stroke="var(--grid)" x1="56" x2="996" y1="56.5" y2="56.5"></line><text class="blur" text-anchor="end" x="50" y="60.5">€0.000</text><line stroke="var(--grid)" x1="56" x2="996" y1="10" y2="10"></line><text class="blur" text-anchor="end" x="50" y="14">€0.000</text><rect fill="var(--s1)" height="16.122479999999996" opacity="0.75" width="54.83333333333333" x="67.75" y="179.87752"></rect><rect fill="var(--s2)" height="12.648465000000016" opacity="0.75" width="54.83333333333333" x="67.75" y="167.229055"></rect><rect fill="var(--s3)" height="135.8085975" opacity="0.75" width="54.83333333333333" x="67.75" y="31.4204575"></rect><rect fill="var(--s4)" height="10.313234999999995" opacity="0.75" width="54.83333333333333" x="67.75" y="21.107222500000006"></rect><rect class="hit" fill="transparent" height="196" width="78.33333333333333" x="56" y="0"></rect><rect fill="var(--s1)" height="16.07132999999999" opacity="0.75" width="54.83333333333333" x="146.08333333333331" y="179.92867"></rect><rect fill="var(--s2)" height="12.648465000000016" opacity="0.75" width="54.83333333333333" x="146.08333333333331" y="167.280205"></rect><rect fill="var(--s3)" height="136.98342000000002" opacity="0.75" width="54.83333333333333" x="146.08333333333331" y="30.296784999999982"></rect><rect fill="var(--s4)" height="10.416232500000003" opacity="0.75" width="54.83333333333333" x="146.08333333333331" y="19.88055249999998"></rect><text text-anchor="middle" x="173.49999999999997" y="214">21 okt</text><rect class="hit" fill="transparent" height="196" width="78.33333333333333" x="134.33333333333331" y="0"></rect><rect fill="var(--s1)" height="16.027154999999993" opacity="0.75" width="54.83333333333333" x="224.41666666666666" y="179.972845"></rect><rect fill="var(--s2)" height="12.648465000000016" opacity="0.75" width="54.83333333333333" x="224.41666666666666" y="167.32438"></rect><rect fill="var(--s3)" height="133.52684250000001" opacity="0.75" width="54.83333333333333" x="224.41666666666666" y="33.79753749999998"></rect><rect fill="var(--s4)" height="9.794062499999992" opacity="0.75" width="54.83333333333333" x="224.41666666666666" y="24.00347499999999"></rect><rect class="hit" fill="transparent" height="196" width="78.33333333333333" x="212.66666666666666" y="0"></rect><rect fill="var(--s1)" height="15.876029999999986" opacity="0.75" width="54.83333333333333" x="302.75" y="180.12397"></rect><rect fill="var(--s2)" height="12.648465000000016" opacity="0.75" width="54.83333333333333" x="302.75" y="167.475505"></rect><rect fill="var(--s3)" height="133.6733175" opacity="0.75" width="54.83333333333333" x="302.75" y="33.802187499999995"></rect><rect fill="var(--s4)" height="9.784297499999994" opacity="0.75" width="54.83333333333333" x="302.75" y="24.01789"></rect><text text-anchor="middle" x="330.1666666666667" y="214">23 okt</text><rect class="hit" fill="transparent" height="196" width="78.33333333333333" x="291" y="0"></rect><rect fill="var(--s1)" height="14.917200000000008" opacity="0.75" width="54.83333333333333" x="381.0833333333333" y="181.0828"></rect><rect fill="var(--s2)" height="12.648464999999987" opacity="0.75" width="54.83333333333333" x="381.0833333333333" y="168.434335"></rect><rect fill="var(--s3)" height="133.6733175" opacity="0.75" width="54.83333333333333" x="381.0833333333333" y="34.761017499999994"></rect><rect fill="var(--s4)" height="9.753375000000002" opacity="0.75" width="54.83333333333333" x="381.0833333333333" y="25.007642499999992"></rect><rect class="hit" fill="transparent" height="196" width="78.33333333333333" x="369.3333333333333" y="0"></rect><rect fill="var(--s1)" height="4.322407499999997" opacity="1" width="54.83333333333333" x="459.41666666666663" y="191.6775925"></rect><rect fill="var(--s2)" height="23.00959500000002" opacity="1" width="54.83333333333333" x="459.41666666666663" y="168.66799749999998"></rect><rect fill="var(--s3)" height="133.6733175" opacity="1" width="54.83333333333333" x="459.41666666666663" y="34.99467999999999"></rect><rect fill="var(--s4)" height="9.664560000000002" opacity="1" width="54.83333333333333" x="459.41666666666663" y="25.330119999999987"></rect><text text-anchor="middle" x="486.8333333333333" y="214">25 okt</text><rect class="hit" fill="transparent" height="196" width="78.33333333333333" x="447.66666666666663" y="0"></rect><rect fill="var(--s1)" height="4.2073199999999815" opacity="1" width="54.83333333333333" x="537.75" y="191.79268000000002"></rect><rect fill="var(--s2)" height="23.00959500000002" opacity="1" width="54.83333333333333" x="537.75" y="168.783085"></rect><rect fill="var(--s3)" height="135.0562275" opacity="1" width="54.83333333333333" x="537.75" y="33.726857499999994"></rect><rect fill="var(--s4)" height="9.695249999999994" opacity="1" width="54.83333333333333" x="537.75" y="24.0316075"></rect><rect class="hit" fill="transparent" height="196" width="78.33333333333333" x="526" y="0"></rect><rect fill="var(--s1)" height="5.71857" opacity="1" width="54.83333333333333" x="616.0833333333333" y="190.28143"></rect><rect fill="var(--s2)" height="23.358344999999986" opacity="1" width="54.83333333333333" x="616.0833333333333" y="166.92308500000001"></rect><rect fill="var(--s3)" height="137.4421425" opacity="1" width="54.83333333333333" x="616.0833333333333" y="29.480942500000015"></rect><rect fill="var(--s4)" height="10.176060000000007" opacity="1" width="54.83333333333333" x="616.0833333333333" y="19.30488250000001"></rect><text text-anchor="middle" x="643.4999999999999" y="214">27 okt</text><rect class="hit" fill="transparent" height="196" width="78.33333333333333" x="604.3333333333333" y="0"></rect><rect fill="var(--s1)" height="5.011304999999993" opacity="1" width="54.83333333333333" x="694.4166666666666" y="190.988695"></rect><rect fill="var(--s2)" height="23.358345000000014" opacity="1" width="54.83333333333333" x="694.4166666666666" y="167.63035"></rect><rect fill="var(--s3)" height="138.63672749999998" opacity="1" width="54.83333333333333" x="694.4166666666666" y="28.993622500000004"></rect><rect fill="var(--s4)" height="10.209307499999987" opacity="1" width="54.83333333333333" x="694.4166666666666" y="18.784315000000017"></rect><rect class="hit" fill="transparent" height="196" width="78.33333333333333" x="682.6666666666666" y="0"></rect><rect fill="var(--s1)" height="4.655579999999986" opacity="1" width="54.83333333333333" x="772.75" y="191.34442"></rect><rect fill="var(--s2)" height="23.358345000000014" opacity="1" width="54.83333333333333" x="772.75" y="167.986075"></rect><rect fill="var(--s3)" height="138.0973275" opacity="1" width="54.83333333333333" x="772.75" y="29.888747500000004"></rect><rect fill="var(--s4)" height="9.824287500000008" opacity="1" width="54.83333333333333" x="772.75" y="20.064459999999997"></rect><text text-anchor="middle" x="800.1666666666666" y="214">29 okt</text><rect class="hit" fill="transparent" height="196" width="78.33333333333333" x="761" y="0"></rect><rect fill="var(--s1)" height="4.267304999999993" opacity="1" width="54.83333333333333" x="851.0833333333333" y="191.732695"></rect><rect fill="var(--s2)" height="23.358345000000014" opacity="1" width="54.83333333333333" x="851.0833333333333" y="168.37435"></rect><rect fill="var(--s3)" height="138.09732749999998" opacity="1" width="54.83333333333333" x="851.0833333333333" y="30.277022500000008"></rect><rect fill="var(--s4)" height="9.824287500000004" opacity="1" width="54.83333333333333" x="851.0833333333333" y="20.452735000000004"></rect><rect class="hit" fill="transparent" height="196" width="78.33333333333333" x="839.3333333333333" y="0"></rect><rect fill="var(--s1)" height="4.069680000000005" opacity="1" width="54.83333333333333" x="929.4166666666666" y="191.93032"></rect><rect fill="var(--s2)" height="23.358345000000014" opacity="1" width="54.83333333333333" x="929.4166666666666" y="168.57197499999998"></rect><rect fill="var(--s3)" height="138.09732749999998" opacity="1" width="54.83333333333333" x="929.4166666666666" y="30.4746475"></rect><rect fill="var(--s4)" height="9.779880000000013" opacity="1" width="54.83333333333333" x="929.4166666666666" y="20.694767499999987"></rect><text text-anchor="middle" x="956.8333333333333" y="214">nu</text><rect class="hit" fill="transparent" height="196" width="78.33333333333333" x="917.6666666666666" y="0"></rect></svg></div>
+<div class="sub" id="worthChartNote">Sinds 20/10/2026:<span class="blur"> €0.000</span> →<span class="blur"> €0.000</span> (<span class="pos"><span class="blur">+€00</span></span>). Belegd + crypto nu 84% van je vermogen (was 84%). Lichtere balken: pockets teruggerekend van vóór je ze opgaf. Een balk per dag, sinds de eerste bewaarde saldi.</div>
+</div>
+<div class="section">
+<div class="toolbar">
+<h2 style="margin:0">Maand</h2>
+<span class="sub">okt 2026</span>
+</div>
+<div class="grid tiles" id="monthTiles"><div class="card tile"><div class="label">Uitgaven</div><div class="value"><span class="blur">€0.000</span></div><div class="note"><span class="blur">−€0.000</span> vs sep 2026</div></div><div class="card tile"><div class="label">Inkomsten</div><div class="value"><span class="blur">€0.000</span></div><div class="note"></div></div><div class="card tile"><div class="label">Gespaard / belegd</div><div class="value"><span class="blur">€000</span></div><div class="note">netto naar beleggingen en spaargeld</div></div><div class="card tile"><div class="label">Over</div><div class="value"><span class="blur">−€000</span></div><div class="note">inkomsten − uitgaven</div></div></div>
+</div>
+<div class="grid row2" id="budgetRow">
+<div class="card">
+<h2>Inkomen en vaste kosten</h2>
+<div id="income"><table><thead><tr><th>Bron</th><th class="hide-s">Afspraak</th><th class="num">Verwacht / maand</th><th class="num">Ontvangen okt</th></tr></thead><tbody><tr><td>Huurbijdrage ouders <span class="sub">(Crelan)</span></td><td class="hide-s sub"><span class="blur">€000</span> per maand</td><td class="num"><span class="blur">€000,00</span></td><td class="num"><span class="sub">—</span></td></tr><tr><td>Zakgeld <span class="sub">(Crelan)</span></td><td class="hide-s sub"><span class="blur">€00</span> per maand</td><td class="num"><span class="blur">€00,00</span></td><td class="num"><span class="blur">€00,00</span></td></tr><tr><td>Eetgeld <span class="sub">(Crelan)</span></td><td class="hide-s sub"><span class="blur">€00</span> per week</td><td class="num"><span class="blur">€000,00</span></td><td class="num"><span class="blur">€000,00</span></td></tr><tr><td>Studentenjob (dinsdag 10-17u) <span class="sub">(Revolut)</span></td><td class="hide-s sub">7u ×<span class="blur"> €00,00</span>, lesweken</td><td class="num"><span class="blur">€000,00</span></td><td class="num"><span class="blur">€000,00</span></td></tr><tr><td>Extra van ouders <span class="sub">(Crelan)</span></td><td class="hide-s sub">onregelmatig</td><td class="num"><span class="sub">—</span></td><td class="num"><span class="blur">€00,00</span></td></tr><tr><td>Overige inkomsten</td><td class="hide-s sub">terugbetalingen, giften, …</td><td class="num sub">—</td><td class="num"><span class="blur">€00,00</span></td></tr><tr><td><b>Totaal inkomen</b></td><td class="hide-s"></td><td class="num"><b><span class="blur">€0.000,00</span></b></td><td></td></tr><tr><td>Huur kot <span class="sub">(ING)</span></td><td class="hide-s sub">van<span class="blur"> €000</span> totaal</td><td class="num neg"><span class="blur">−€000,00</span></td><td></td></tr><tr><td>Claude (jouw deel) <span class="sub">(Revolut)</span></td><td class="hide-s sub">van<span class="blur"> €000</span> totaal</td><td class="num neg"><span class="blur">−€0,00</span></td><td></td></tr><tr><td><b>Vrij te besteden</b></td><td class="hide-s"></td><td class="num"><b><span class="blur">€000,00</span></b></td><td></td></tr><tr><td>→ Animatorwerk (zomer) <span class="sub">(ING)</span></td><td class="hide-s sub"><span class="blur">€0.000</span> per jaar</td><td class="num"><span class="sub"><span class="blur">€000,00</span></span></td><td class="num"><span class="sub">—</span></td></tr></tbody></table></div>
+</div>
+<div class="card">
+<h2>Advies</h2>
+<div id="advice"><div class="adv"><span class="ai">🔴</span><span><b>Eten</b> zit<span class="blur"> €000</span> over budget. Compenseer door de rest van de maand in een ander potje wat minder te doen.</span></div><div class="adv"><span class="ai">🔴</span><span><b>Uitgaan (cafés &amp; tickets)</b> zit<span class="blur"> €00</span> over budget. Compenseer door de rest van de maand in een ander potje wat minder te doen.</span></div><div class="adv"><span class="ai">🔴</span><span><b>Overig (incl. cash)</b> zit<span class="blur"> €00</span> over budget. Compenseer door de rest van de maand in een ander potje wat minder te doen.</span></div><div class="adv"><span class="ai">🏷️</span><span><b>Duurder:</b> BONI franse emmental geraspt 200g kost nu<span class="blur"> €00,00</span>/kg in plaats van<span class="blur"> €00,00</span> (+6% sinds 20/10/2026). <a class="navlink" href="boodschappen/">Boodschappen →</a></span></div><div class="adv"><span class="ai">🧱</span><span>Buffer:<span class="blur"> €0.000</span> van<span class="blur"> €0.000</span> (33%). Deze maand ging er<span class="blur"> €000</span> naar beleggingen: zet nieuw spaargeld eerst op je spaarrekening tot de buffer vol is.</span></div><div class="adv"><span class="ai">📉</span><span>Je potjes samen:<span class="blur"> €000</span> van<span class="blur"> €000</span> op dag 31. Normaal zat je nu rond<span class="blur"> €000.</span></span></div><div class="adv"><span class="ai">📥</span><span>European Sleeper heenreis (<span class="blur">€00,00</span>) nog te ontvangen. Zet dat geld meteen op je spaarrekening als het binnenkomt: je had de kost al betaald.</span></div><div class="adv"><span class="ai">📥</span><span>European Sleeper terugreis (<span class="blur">€00,00</span>) nog te ontvangen. Zet dat geld meteen op je spaarrekening als het binnenkomt: je had de kost al betaald.</span></div><div class="adv"><span class="ai">📥</span><span>Helft Claude-abonnement (<span class="blur">€000,00</span>) nog te ontvangen. Zet dat geld meteen op je spaarrekening als het binnenkomt: je had de kost al betaald.</span></div></div>
+</div>
+</div>
+<div class="card section" id="budgetCard">
+<div class="sechead" style="margin-bottom:6px">
+<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><h2 style="margin:0">Budgetten</h2>
+
+
+</div>
+<span class="sub" id="budgetPace">dag 31 van 31 · het streepje toont waar je nu "zou mogen" zitten</span></div>
+<div id="monthBar"><div class="mlegend"><span><b>Maandgeld<span class="blur"> €000</span></b></span>
+<span><i class="sw" style="background:var(--s1)"></i>uitgegeven<span class="blur"> €000</span></span><span><i class="sw" style="background:var(--grid)"></i>nog te besteden</span>
+<span><i class="sw" style="background:var(--s3)"></i>opzij zetten</span><span><i class="sw" style="background:var(--neg)"></i>overschrijding<span class="blur"> €000</span></span></div>
+<div class="mbar"><div class="seg over" style="flex:240">
+<div class="fill" style="width:100%"></div><span class="lbl">🍝 Eten</span></div><div class="seg over" style="flex:70">
+<div class="fill" style="width:100%"></div><span class="lbl">🎉 Uitgaan</span></div><div class="seg over" style="flex:50">
+<div class="fill" style="width:100%"></div><span class="lbl">🧩 Overig</span></div><div class="seg save" style="flex:50">
+<div class="eat" style="width:100%"></div><span class="lbl">🛍️<span class="blur"> €00</span></span></div><div class="seg save" style="flex:25">
+<div class="eat" style="width:100%"></div><span class="lbl">✈️<span class="blur"> €00</span></span></div><div class="seg save" style="flex:57">
+<div class="eat" style="width:100%"></div><span class="lbl">🛟<span class="blur"> €00</span></span></div></div>
+<div class="mverdict">🔴 Je overschrijdingen (<span class="blur">€000</span>) zijn groter dan wat je opzij wilt zetten: deze maand lukt<span class="blur"> €00</span> shopping en<span class="blur"> €00</span> reispotje en<span class="blur"> €00</span> sparen niet zonder ergens te besparen. <span class="sub">(inclusief<span class="blur"> €00</span> zonder budget, bv. naar personen)</span></div></div>
+<div class="pots" id="budget"><div class="pot over"><div class="ph"><span>🍝 Eten</span><span><b><span class="blur">€000</span></b> <span class="sub">van<span class="blur"> €000</span></span></span></div>
+<div class="meter"><div style="width:100%"></div><span class="pace" style="left:100%"></span></div>
+<div class="pn"><span class="neg"><span class="blur">€000</span> over budget</span></div></div><div class="pot over"><div class="ph"><span>🎉 Uitgaan (cafés &amp; tickets)</span><span><b><span class="blur">€000</span></b> <span class="sub">van<span class="blur"> €00</span></span></span></div>
+<div class="meter"><div style="width:100%"></div><span class="pace" style="left:100%"></span></div>
+<div class="pn"><span class="neg"><span class="blur">€00</span> over budget</span></div></div><div class="pot over"><div class="ph"><span>🧩 Overig (incl. cash)</span><span><b><span class="blur">€00</span></b> <span class="sub">van<span class="blur"> €00</span></span></span></div>
+<div class="meter"><div style="width:100%"></div><span class="pace" style="left:100%"></span></div>
+<div class="pn"><span class="neg"><span class="blur">€00</span> over budget</span></div></div><div class="pot sink good">
+<div class="ph"><span>🛍️ Shopping</span><span><b class=""><span class="blur">€00,00</span></b> <span class="sub">in potje</span></span></div>
+<div class="pn"><span class="blur">+€00,00</span>/week</div></div><div class="pot sink good">
+<div class="ph"><span>✈️ Reispotje</span><span><b class=""><span class="blur">€0,00</span></b> <span class="sub">in potje</span></span></div>
+<div class="pn"><span class="blur">+€0,00</span>/week</div></div><div class="pot sink good">
+<div class="ph"><span>🛟 Sparen</span><span><b class=""><span class="blur">€00,00</span></b> <span class="sub">in potje</span></span></div>
+<div class="pn"><span class="blur">+€00,00</span>/week</div></div></div>
+<div class="sub" id="budgetFoot" style="margin-top:10px">Totaal zonder huur:<span class="blur"> €000</span> van<span class="blur"> €000</span> vrij te besteden. Zonder budget deze maand: Naar personen<span class="blur"> €00</span>, Transport<span class="blur"> €0</span>, Buiten budget<span class="blur"> €000</span> (transport en gezondheid betalen je ouders: zelf voorgeschoten? Zet het op 'Nog te ontvangen').</div>
+</div>
+<div class="grid row2">
+<div class="card">
+<h2>Uitgaven en inkomsten per maand</h2>
+<div class="legend"><span><i class="sw" style="background:var(--out)"></i>Uitgaven</span><span><i class="sw" style="background:var(--in)"></i>Inkomsten</span></div>
+<div id="monthly"><svg viewBox="0 0 559 220" width="100%"><line stroke="var(--grid)" x1="48" x2="551" y1="196" y2="196"></line><text class="blur" text-anchor="end" x="42" y="200">€0</text><line stroke="var(--grid)" x1="48" x2="551" y1="149" y2="149"></line><text class="blur" text-anchor="end" x="42" y="153">€0.000</text><line stroke="var(--grid)" x1="48" x2="551" y1="102" y2="102"></line><text class="blur" text-anchor="end" x="42" y="106">€0.000</text><line stroke="var(--grid)" x1="48" x2="551" y1="55" y2="55"></line><text class="blur" text-anchor="end" x="42" y="59">€0.000</text><line stroke="var(--grid)" x1="48" x2="551" y1="8" y2="8"></line><text class="blur" text-anchor="end" x="42" y="12">€0.000</text><path d="M51,196V116.05894q0,-4 4,-4H63.95833333333333q4,0 4,4V196Z" fill="var(--out)"></path><path d="M69.95833333333333,196V145.41138q0,-4 4,-4H82.91666666666666q4,0 4,4V196Z" fill="var(--in)"></path><text style="" text-anchor="middle" x="68.95833333333333" y="214">nov</text><rect class="bar" fill="transparent" height="220" width="41.916666666666664" x="48" y="0"></rect><path d="M92.91666666666666,196V62.16874000000006q0,-4 4,-4H105.87499999999999q4,0 4,4V196Z" fill="var(--out)"></path><path d="M111.87499999999999,196V67.72319999999999q0,-4 4,-4H124.83333333333331q4,0 4,4V196Z" fill="var(--in)"></path><text style="" text-anchor="middle" x="110.87499999999999" y="214">dec</text><rect class="bar" fill="transparent" height="220" width="41.916666666666664" x="89.91666666666666" y="0"></rect><path d="M134.83333333333331,196V136.13593q0,-4 4,-4H147.79166666666666q4,0 4,4V196Z" fill="var(--out)"></path><path d="M153.79166666666666,196V123.63205q0,-4 4,-4H166.75q4,0 4,4V196Z" fill="var(--in)"></path><text style="" text-anchor="middle" x="152.79166666666666" y="214">jan</text><rect class="bar" fill="transparent" height="220" width="41.916666666666664" x="131.83333333333331" y="0"></rect><path d="M176.75,196V155.63106000000002q0,-4 4,-4H189.70833333333334q4,0 4,4V196Z" fill="var(--out)"></path><path d="M195.70833333333334,196V173.2194q0,-4 4,-4H208.66666666666669q4,0 4,4V196Z" fill="var(--in)"></path><text style="" text-anchor="middle" x="194.70833333333334" y="214">feb</text><rect class="bar" fill="transparent" height="220" width="41.916666666666664" x="173.75" y="0"></rect><path d="M218.66666666666666,196V151.15712999999997q0,-4 4,-4H231.625q4,0 4,4V196Z" fill="var(--out)"></path><path d="M237.625,196V152.5112q0,-4 4,-4H250.58333333333334q4,0 4,4V196Z" fill="var(--in)"></path><text style="" text-anchor="middle" x="236.625" y="214">mrt</text><rect class="bar" fill="transparent" height="220" width="41.916666666666664" x="215.66666666666666" y="0"></rect><path d="M260.5833333333333,196V124.31214q0,-4 4,-4H273.54166666666663q4,0 4,4V196Z" fill="var(--out)"></path><path d="M279.54166666666663,196V141.79613999999998q0,-4 4,-4H292.49999999999994q4,0 4,4V196Z" fill="var(--in)"></path><text style="" text-anchor="middle" x="278.54166666666663" y="214">apr</text><rect class="bar" fill="transparent" height="220" width="41.916666666666664" x="257.5833333333333" y="0"></rect><path d="M302.5,196V156.14712q0,-4 4,-4H315.4583333333333q4,0 4,4V196Z" fill="var(--out)"></path><path d="M321.4583333333333,196V161.95866999999998q0,-4 4,-4H334.41666666666663q4,0 4,4V196Z" fill="var(--in)"></path><text style="" text-anchor="middle" x="320.4583333333333" y="214">mei</text><rect class="bar" fill="transparent" height="220" width="41.916666666666664" x="299.5" y="0"></rect><path d="M344.41666666666663,196V168.92266q0,-4 4,-4H357.37499999999994q4,0 4,4V196Z" fill="var(--out)"></path><path d="M363.37499999999994,196V164.6137q0,-4 4,-4H376.33333333333326q4,0 4,4V196Z" fill="var(--in)"></path><text style="" text-anchor="middle" x="362.37499999999994" y="214">jun</text><rect class="bar" fill="transparent" height="220" width="41.916666666666664" x="341.41666666666663" y="0"></rect><path d="M386.3333333333333,196V173.79797q0,-4 4,-4H399.29166666666663q4,0 4,4V196Z" fill="var(--out)"></path><path d="M405.29166666666663,196V171.4851q0,-4 4,-4H418.24999999999994q4,0 4,4V196Z" fill="var(--in)"></path><text style="" text-anchor="middle" x="404.29166666666663" y="214">jul</text><rect class="bar" fill="transparent" height="220" width="41.916666666666664" x="383.3333333333333" y="0"></rect><path d="M428.25,196V126.46943999999999q0,-4 4,-4H441.2083333333333q4,0 4,4V196Z" fill="var(--out)"></path><path d="M447.2083333333333,196V61.95301q0,-4 4,-4H460.16666666666663q4,0 4,4V196Z" fill="var(--in)"></path><text style="" text-anchor="middle" x="446.2083333333333" y="214">aug</text><rect class="bar" fill="transparent" height="220" width="41.916666666666664" x="425.25" y="0"></rect><path d="M470.16666666666663,196V39.05461q0,-4 4,-4H483.12499999999994q4,0 4,4V196Z" fill="var(--out)"></path><path d="M489.12499999999994,196V74.15890999999999q0,-4 4,-4H502.08333333333326q4,0 4,4V196Z" fill="var(--in)"></path><text style="" text-anchor="middle" x="488.12499999999994" y="214">sep</text><rect class="bar" fill="transparent" height="220" width="41.916666666666664" x="467.16666666666663" y="0"></rect><rect fill="var(--hover)" height="188" rx="6" width="39.916666666666664" x="510.0833333333333" y="8"></rect><path d="M512.0833333333333,196V130.55890999999997q0,-4 4,-4H525.0416666666666q4,0 4,4V196Z" fill="var(--out)"></path><path d="M531.0416666666666,196V140.58635999999998q0,-4 4,-4H544q4,0 4,4V196Z" fill="var(--in)"></path><text style="fill:var(--text);font-weight:600" text-anchor="middle" x="530.0416666666666" y="214">okt</text><rect class="bar" fill="transparent" height="220" width="41.916666666666664" x="509.0833333333333" y="0"></rect></svg></div>
+<div class="sub">Klik op een maand om ze te openen. Interne overschrijvingen, pockets en sparen/beleggen tellen niet mee.</div>
+</div>
+<div class="card">
+<h2>Per categorie</h2>
+<div id="cats">
+<div class="cat-row">
+<span class="name">Huur</span>
+<span class="track"><div class="fill" style="width:100%"></div><div class="avg" style="left:16.666666666666664%"></div></span>
+<span class="amt"><span class="blur">€000</span></span></div>
+<div class="cat-row">
+<span class="name">Boodschappen</span>
+<span class="track"><div class="fill" style="width:51.635714285714286%"></div><div class="avg" style="left:37.02395833333331%"></div></span>
+<span class="amt"><span class="blur">€000</span></span></div>
+<div class="cat-row">
+<span class="name">Buiten budget</span>
+<span class="track"><div class="fill" style="width:44.642857142857146%"></div><div class="avg" style="left:3.7202380952380953%"></div></span>
+<span class="amt"><span class="blur">€000</span></span></div>
+<div class="cat-row">
+<span class="name">Vaste kosten</span>
+<span class="track"><div class="fill" style="width:19.446428571428573%"></div><div class="avg" style="left:1.9446428571428573%"></div></span>
+<span class="amt"><span class="blur">€000</span></span></div>
+<div class="cat-row">
+<span class="name">Uitgaan &amp; tickets</span>
+<span class="track"><div class="fill" style="width:17.982142857142854%"></div><div class="avg" style="left:23.7534226190476%"></div></span>
+<span class="amt"><span class="blur">€000</span></span></div>
+<div class="cat-row">
+<span class="name">Overig</span>
+<span class="track"><div class="fill" style="width:13.7875%"></div><div class="avg" style="left:28.784821428571433%"></div></span>
+<span class="amt"><span class="blur">€00</span></span></div>
+<div class="cat-row">
+<span class="name">Eten &amp; drinken</span>
+<span class="track"><div class="fill" style="width:10.125%"></div><div class="avg" style="left:9.405208333333338%"></div></span>
+<span class="amt"><span class="blur">€00</span></span></div>
+<div class="cat-row">
+<span class="name">Naar personen</span>
+<span class="track"><div class="fill" style="width:5.589285714285714%"></div><div class="avg" style="left:70.44702380952381%"></div></span>
+<span class="amt"><span class="blur">€00</span></span></div>
+<div class="cat-row">
+<span class="name">Transport</span>
+<span class="track"><div class="fill" style="width:0.625%"></div><div class="avg" style="left:11.962946428571431%"></div></span>
+<span class="amt"><span class="blur">€0</span></span></div></div>
+<div class="sub" style="margin-top:6px">Streepje = gemiddelde per maand over de laatste 12 maanden. Klik om te filteren.</div>
+</div>
+</div>
+<div class="card section">
+<h2>Terugkerende kosten</h2>
+<div id="subs"><table><thead><tr><th>Naam</th><th class="hide-s">Categorie</th><th class="num">Maanden (van 12)</th><th class="num hide-s">Laatst</th><th class="num">± per keer</th></tr></thead><tbody><tr><td><span class="blur">xxxxx-xxx xxxxxxx xxxx</span></td><td class="hide-s"><span class="tag">Abonnementen</span></td><td class="num">1</td><td class="num hide-s">23/03/2026</td><td class="num"><span class="blur">€000,00</span></td></tr></tbody></table></div>
+</div>
+<div class="card section" id="txCard">
+<h2>Transacties</h2>
+<div class="toolbar">
+
+
+
+<span id="catChip"></span>
+</div>
+<div class="tablewrap"><table>
+<thead><tr><th>Datum</th><th>Naam</th><th class="hide-s">Categorie</th><th class="num">Bedrag</th></tr></thead>
+<tbody id="rows"><tr><td>30/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>30/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>30/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxx xxxx xxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Eten &amp; drinken</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>30/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Transport</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>30/10/2026</td><td><span class="acc-dot" style="background:var(--ing)"></span><span class="blur">xxxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Eten &amp; drinken</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>30/10/2026</td><td><span class="acc-dot" style="background:var(--ing)"></span><span class="blur">xxxxx - xxxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€00,00</span></td></tr><tr><td>29/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Overig</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>29/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Eten &amp; drinken</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>28/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxx xxx xxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>28/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxx xxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€0,00</span></td></tr><tr><td>28/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>27/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxx xxx xxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>26/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxx xxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Overig</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>26/10/2026</td><td><span class="acc-dot" style="background:var(--crelan)"></span><span class="blur">xxxxx - xxxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€00,00</span></td></tr><tr><td>25/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxx xxx xxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>23/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>23/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>23/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxx xx xxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Naar personen</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>23/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxx xxx xxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>23/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxx xx xxxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>23/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Voorgeschoten</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>22/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxx xx xxxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>22/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Eten &amp; drinken</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>21/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxx xxxxxxx xxxx</span></td>
+<td class="hide-s"><span class="tag">Abonnementen</span></td><td class="num"><span class="blur">€0,00</span></td></tr><tr><td>20/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxx xxx xxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>19/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xx xxxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>19/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Eten &amp; drinken</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>19/10/2026</td><td><span class="acc-dot" style="background:var(--crelan)"></span><span class="blur">xxxxx - xxxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€00,00</span></td></tr><tr><td>17/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>17/10/2026</td><td><span class="acc-dot" style="background:var(--ing)"></span><span class="blur">xxxxx xxxx xxx xxxxxxxx xxx</span></td>
+<td class="hide-s"><span class="tag">Bankkosten</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>16/10/2026</td><td><span class="acc-dot" style="background:var(--ing)"></span><span class="blur">xxxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Voorgeschoten</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>15/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xx xxxxxxxxxx xxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Beleggen &amp; sparen</span></td><td class="num"><span class="blur">−€000,00</span></td></tr><tr><td>15/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Eten &amp; drinken</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>15/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxx xxxx</span></td>
+<td class="hide-s"><span class="tag">Eten &amp; drinken</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>14/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xx x xxxxx xxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€0,00</span></td></tr><tr><td>14/10/2026</td><td><span class="acc-dot" style="background:var(--ing)"></span><span class="blur">xxxx</span></td>
+<td class="hide-s"><span class="tag">Terugbetaald</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>14/10/2026</td><td><span class="acc-dot" style="background:var(--crelan)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Terugbetaald</span></td><td class="num pos"><span class="blur">+€00,00</span></td></tr><tr><td>13/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxx  xxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Eten &amp; drinken</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>13/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxx xxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€0,00</span></td></tr><tr><td>12/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxx xxx</span></td>
+<td class="hide-s"><span class="tag">Overig</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>12/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxx xxx xxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>12/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxxxxx xxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>12/10/2026</td><td><span class="acc-dot" style="background:var(--crelan)"></span><span class="blur">xxxxx - xxxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€00,00</span></td></tr><tr><td>12/10/2026</td><td><span class="acc-dot" style="background:var(--crelan)"></span><span class="blur">xxxxx - xxxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€00,00</span></td></tr><tr><td>11/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxx xxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Overig</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>10/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxxxx xxxxxx xxx</span></td>
+<td class="hide-s"><span class="tag">Vaste kosten</span> <span class="sub">jaarlijks</span></td><td class="num"><span class="blur">−€000,00</span></td></tr><tr><td>10/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxxxx xxxxxx xxx</span></td>
+<td class="hide-s"><span class="tag">Voorgeschoten</span> <span class="sub">jaarlijks</span></td><td class="num"><span class="blur">−€000,00</span></td></tr><tr><td>10/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxx xxx xxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>10/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxx xxxx xxxxxxxxxxx xx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>09/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>09/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>09/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxx-xxxxx xxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€0,00</span></td></tr><tr><td>09/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxx-xxxxx xxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€00,00</span></td></tr><tr><td>09/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxx xxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€00,00</span></td></tr><tr><td>09/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxxx xxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>09/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxx xxx xxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>08/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxx xxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€000,00</span></td></tr><tr><td>07/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxxxxxxxx xx</span></td>
+<td class="hide-s"><span class="tag">Buiten budget</span></td><td class="num"><span class="blur">−€000,00</span></td></tr><tr><td>05/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxx xxx xxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>05/10/2026</td><td><span class="acc-dot" style="background:var(--crelan)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Inkomsten</span></td><td class="num pos"><span class="blur">+€00,00</span></td></tr><tr><td>04/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxx xxx xxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>03/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>03/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxxx xxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Terugbetaald</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>03/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxx xxx xxxxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Boodschappen</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>03/10/2026</td><td><span class="acc-dot" style="background:var(--ing)"></span><span class="blur">xxxxx - xxxxx</span></td>
+<td class="hide-s"><span class="tag">Terugbetaald</span></td><td class="num pos"><span class="blur">+€0,00</span></td></tr><tr><td>02/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>01/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>01/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxx</span></td>
+<td class="hide-s"><span class="tag">Uitgaan &amp; tickets</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>01/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxx xx xxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Naar personen</span></td><td class="num"><span class="blur">−€0,00</span></td></tr><tr><td>01/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxxx xxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Naar personen</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>01/10/2026</td><td><span class="acc-dot" style="background:var(--revolut)"></span><span class="blur">xxx xxxx-xxxx-xxxxxxxxx</span></td>
+<td class="hide-s"><span class="tag">Overig</span></td><td class="num"><span class="blur">−€00,00</span></td></tr><tr><td>01/10/2026</td><td><span class="acc-dot" style="background:var(--ing)"></span><span class="blur">xxxxxx xxxxxx xxxxxx</span></td>
+<td class="hide-s"><span class="tag">Huur</span></td><td class="num"><span class="blur">−€000,00</span></td></tr><tr><td>01/10/2026</td><td><span class="acc-dot" style="background:var(--ing)"></span><span class="blur">xxxxx xxxx xxx xxxxxxxx xxx</span></td>
+<td class="hide-s"><span class="tag">Bankkosten</span></td><td class="num"><span class="blur">−€0,00</span></td></tr></tbody>
+</table></div>
+</div>
+</div>
+<div id="tip"></div>
+
+</body></html>
