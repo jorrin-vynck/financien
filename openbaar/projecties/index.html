@@ -1,0 +1,770 @@
+<!doctype html>
+<html lang="nl">
+<head><meta name="robots" content="noindex, nofollow"><script>window.SITE_MODE = true; window.PUBLIC = true;</script><link rel="icon" type="image/png" sizes="64x64" href="/financien/favicon.png?v=2"><link rel="icon" type="image/png" sizes="32x32" href="/financien/favicon-32.png?v=2"><link rel="shortcut icon" href="/financien/favicon.png?v=2"><link rel="apple-touch-icon" href="/financien/apple-touch-icon.png?v=2">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Projecties</title>
+<style>
+.cols { display: flex; flex-direction: column; gap: var(--gap); }
+@media (min-width: 900px) { .cols { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); align-items: start; gap: var(--gap); } }
+.col { display: flex; flex-direction: column; gap: var(--gap); }
+#hero { padding: var(--sp2) 0 var(--sp2); }
+.hlabel { color: var(--muted); font-size: 14px; font-weight: 500; min-height: 20px; }
+.hval { font-size: 40px; font-weight: 700; letter-spacing: -.03em; line-height: 1.1; margin: 2px 0 4px; }
+.hsub { font-size: 14px; color: var(--text-2); min-height: 20px; }
+.hsub b { font-weight: 650; }
+#mc { margin: var(--sp4) 0 var(--sp3); }
+.lgd { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); }
+.lgd i { display: inline-block; width: 14px; height: 0; border-top: 2px solid; vertical-align: 3px; margin-right: 5px; }
+.lgd i.bd { height: 9px; border: 0; border-radius: 3px; vertical-align: -1px; }
+#hor { display: flex; width: 100%; } #hor button { flex: 1; }
+.ctl { display: grid; gap: var(--sp4); }
+.ctl .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ctl .lbl { font-weight: 600; }
+.ctl input[type=range] { width: 100%; accent-color: var(--accent); margin: 4px 0 0; }
+.ctl input[type=number] { width: 104px; text-align: right; }
+.switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; }
+.switch input { appearance: none; -webkit-appearance: none; width: 46px; height: 28px; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--border); position: relative; cursor: pointer; flex: none; padding: 0; }
+.switch input::after { content: ""; position: absolute; top: 2px; left: 2px; width: 22px; height: 22px; border-radius: 99px; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.3); transition: left .15s; }
+.switch input:checked { background: var(--pos); border-color: var(--pos); } .switch input:checked::after { left: 20px; }
+.kv { display: grid; grid-template-columns: 1fr auto; gap: var(--sp3); font-size: 15px; }
+.kv > div:nth-child(even) { text-align: right; font-weight: 600; white-space: nowrap; }
+.hnote { font-size: 13px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+table td, table th { padding: 9px 6px; } table td:first-child, table th:first-child { padding-left: 0; } table td:last-child, table th:last-child { padding-right: 0; }
+</style>
+<meta name="theme-color" content="#f2f2f6" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><script>window.PAGE = "proj";</script><style>/* Gedeeld thema voor elke pagina (overzicht, beleggen, projecties, boodschappen, beheer).
+   Mobiel eerst: tabbalk onderaan op gsm, bovenaan op computer. Licht en donker volgen het toestel. */
+:root {
+  color-scheme: light;
+  --bg: #f2f2f6; --surface: #ffffff; --surface-2: #f5f5f8; --border: #e5e5ea; --card: #ffffff;
+  --text: #0c0c10; --text-2: #4d4d57; --muted: #8a8a94; --grid: #ececf1; --hover: rgba(0,0,0,.04);
+  --accent: #5b5bd6; --accent-soft: rgba(91,91,214,.12);
+  --pos: #0f9f5a; --neg: #e5484d; --pos-soft: rgba(15,159,90,.12); --neg-soft: rgba(229,72,77,.12);
+  --in: #0f9f5a; --out: #e5484d; --ref: #9a9aa4;
+  --s1: #5b5bd6; --s2: #f59e0b; --s3: #10b981; --s4: #ec4899; --s1-fill: rgba(91,91,214,.12);
+  --p1: #5b5bd6; --p2: #f59e0b; --p3: #10b981; --p4: #ec4899;
+  --amber: #f59e0b; --org: #f97316; --cyan: #0ea5e9; --yl: #5b5bd6;
+  --revolut: #000000; --revolut-fg: #ffffff; --ing: #ff6200; --crelan: #3fa535;
+  --shadow: 0 1px 2px rgba(0,0,0,.04);
+  --radius: 20px; --tabbar: 64px;
+  /* spatiëring: altijd een van deze stappen */
+  --sp1: 4px; --sp2: 8px; --sp3: 12px; --sp4: 16px; --sp5: 24px; --sp6: 32px;
+  --pad: var(--sp4); --gap: var(--sp4);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #000000; --surface: #111114; --surface-2: #1a1a1f; --border: #26262d; --card: #111114;
+    --text: #f4f4f6; --text-2: #b4b4be; --muted: #7d7d89; --grid: #202027; --hover: rgba(255,255,255,.05);
+    --accent: #8b8cff; --accent-soft: rgba(139,140,255,.16);
+    --pos: #2fd075; --neg: #ff5c61; --pos-soft: rgba(47,208,117,.14); --neg-soft: rgba(255,92,97,.14);
+    --in: #2fd075; --out: #ff5c61; --ref: #8a8a96;
+    --s1: #8b8cff; --s2: #fbbf24; --s3: #34d399; --s4: #f472b6; --s1-fill: rgba(139,140,255,.16);
+    --p1: #8b8cff; --p2: #fbbf24; --p3: #34d399; --p4: #f472b6;
+    --amber: #fbbf24; --org: #fb923c; --cyan: #38bdf8; --yl: #8b8cff;
+    --revolut: #000000; --revolut-fg: #ffffff; --ing: #ff6200; --crelan: #3fa535;
+    --shadow: none;
+  }
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { background: var(--bg); -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg) !important; color: var(--text) !important;
+  font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  -webkit-font-smoothing: antialiased; font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1080px !important; margin: 0 auto; padding: var(--sp2) var(--sp4) calc(var(--tabbar) + var(--sp6) + env(safe-area-inset-bottom)) !important; }
+@media (min-width: 900px) { :root { --pad: var(--sp5); --gap: var(--sp5); } .wrap { padding-left: var(--sp5) !important; padding-right: var(--sp5) !important; } }
+body > .wrap > header, .wrap > header { display: none !important; }
+h1 { font-size: 28px; font-weight: 700; letter-spacing: -.02em; margin: 0; }
+h2 { font-size: 17px !important; font-weight: 650 !important; letter-spacing: -.01em; margin: 0 0 var(--sp3) !important; color: var(--text) !important; text-transform: none !important; }
+h3 { font-size: 15px; font-weight: 600; margin: 0 0 8px; }
+a { color: var(--accent); text-decoration: none; }
+.sub, .note, .label, .src { color: var(--muted) !important; font-size: 13px; }
+.pos, .up, .g { color: var(--pos) !important; } .neg, .dn, .r { color: var(--neg) !important; }
+.card { background: var(--surface) !important; border: 0 !important; border-radius: var(--radius) !important; box-shadow: var(--shadow) !important; padding: var(--pad) !important; }
+.section { margin-top: var(--gap) !important; }
+.grid { gap: var(--gap) !important; }
+.row2 { margin-top: 12px !important; }
+.tile .label { font-size: 13px; } .tile .value { font-size: 22px; font-weight: 650; letter-spacing: -.01em; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+th { text-align: left; color: var(--muted) !important; font-weight: 500; font-size: 12.5px; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+td { padding: 10px 8px; border-bottom: 1px solid var(--grid); }
+tbody tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; white-space: nowrap; }
+@media (max-width: 600px) { .hide-s { display: none !important; } }
+input, select, textarea { font: inherit; font-size: 16px; color: var(--text); background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 9px 12px; }
+input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+input[type=search] { -webkit-appearance: none; appearance: none; }
+button { font: inherit; cursor: pointer; }
+.btn { font: inherit; font-size: 14px; font-weight: 600; border: 0; background: var(--text); color: var(--bg); border-radius: 999px; padding: 9px 16px; cursor: pointer; }
+.btn.soft { background: var(--surface-2); color: var(--text); }
+.btn:disabled, button:disabled { opacity: .45; cursor: default; }
+.chip, .tag { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; border-radius: 999px; padding: 3px 10px; background: var(--surface-2); color: var(--text-2); border: 0; }
+/* gesegmenteerde knoppen (perioden, filters) */
+.seg, .seg-toggle, .ranges { display: inline-flex; gap: 2px; padding: 3px; background: var(--surface-2); border-radius: 999px; border: 0 !important; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+.seg::-webkit-scrollbar, .ranges::-webkit-scrollbar { display: none; }
+.seg button, .seg-toggle button, .ranges button { font: inherit; font-size: 13px; font-weight: 600; border: 0 !important; background: transparent !important; color: var(--muted) !important;
+  padding: 6px 12px !important; border-radius: 999px !important; white-space: nowrap; min-height: 32px; }
+.seg button.on, .seg-toggle button.on, .ranges button.on { background: var(--surface) !important; color: var(--text) !important; box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .seg button.on, :root:not([data-theme="light"]) .ranges button.on, :root:not([data-theme="light"]) .seg-toggle button.on { background: #2a2a31 !important; } }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--text-2); }
+svg text { fill: var(--muted); font-size: 11px; font-family: inherit; }
+svg { touch-action: pan-y; }
+details summary { cursor: pointer; color: var(--accent); font-weight: 600; list-style: none; }
+details summary::-webkit-details-marker { display: none; }
+::selection { background: var(--accent-soft); }
+
+/* ---------- bovenbalk + tabbalk ---------- */
+.appbar { position: sticky; top: 0; z-index: 50; background: color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px); padding-top: env(safe-area-inset-top); }
+.appbar .in { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; gap: 12px; padding: 10px 16px; min-height: 56px; }
+.appbar h1 { font-size: 24px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.appbar .acts { display: flex; gap: 6px; }
+.iconbtn { width: 40px; height: 40px; border-radius: 999px; border: 0; background: var(--surface); color: var(--text); display: grid; place-items: center; cursor: pointer; padding: 0; box-shadow: var(--shadow); }
+.iconbtn svg { width: 20px; height: 20px; touch-action: manipulation; }
+.iconbtn.on { background: var(--text); color: var(--bg); }
+.iconbtn.spin svg { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; display: flex; justify-content: space-around;
+  background: color-mix(in srgb, var(--surface) 88%, transparent); -webkit-backdrop-filter: saturate(180%) blur(18px); backdrop-filter: saturate(180%) blur(18px);
+  border-top: 1px solid var(--border); padding: 6px 4px calc(6px + env(safe-area-inset-bottom)); }
+.tabs a { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--muted); font-size: 10.5px; font-weight: 600; text-decoration: none; padding: 4px 0; min-height: 48px; justify-content: center; }
+.tabs a svg { width: 24px; height: 24px; }
+.tabs a.on { color: var(--text); }
+@media (min-width: 900px) {
+  :root { --tabbar: 0px; }
+  .tabs { position: static; background: transparent; border: 0; padding: 0; backdrop-filter: none; -webkit-backdrop-filter: none; justify-content: flex-end; gap: 4px; flex: none; }
+  .tabs a { flex: none; flex-direction: row; gap: 6px; font-size: 14px; padding: 8px 12px; border-radius: 999px; min-height: 0; }
+  .tabs a svg { width: 18px; height: 18px; }
+  .tabs a.on { background: var(--surface); box-shadow: var(--shadow); }
+  .appbar h1 { font-size: 22px; }
+}
+
+/* ---------- bedragen verbergen ---------- */
+html.priv .pm { letter-spacing: .02em; }
+
+/* ---------- melding ---------- */
+.toast { position: fixed; left: 50%; bottom: calc(var(--tabbar) + 20px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--text); color: var(--bg);
+  padding: 10px 16px; border-radius: 14px; z-index: 99; font-size: 14px; font-weight: 500; max-width: calc(100vw - 32px); box-shadow: 0 8px 30px rgba(0,0,0,.25); }
+.toast.err { background: var(--neg); color: #fff; }
+
+/* ---------- onderblad (gsm) / venster (computer) ---------- */
+.sheet-bg { position: fixed; inset: 0; z-index: 90; background: rgba(0,0,0,.45); opacity: 0; transition: opacity .2s; }
+.sheet-bg.open { opacity: 1; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 91; background: var(--surface); border-radius: 22px 22px 0 0; max-height: 88vh; overflow: auto;
+  padding: 8px 18px calc(22px + env(safe-area-inset-bottom)); transform: translateY(100%); transition: transform .25s cubic-bezier(.2,.8,.2,1); overscroll-behavior: contain; }
+.sheet.open { transform: none; }
+.sheet .grab { width: 40px; height: 5px; border-radius: 9px; background: var(--border); margin: 0 auto 12px; }
+.sheet h3 { font-size: 18px; margin: 0 0 4px; }
+.sheet .srow { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; } .sheet .srow > * { flex: 1; min-width: 0; }
+.sheet .opts { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 10px; }
+.sheet .opt { padding: 10px 12px; border-radius: 12px; background: var(--surface-2); cursor: pointer; font-size: 14px; }
+.sheet .opt.on { background: var(--text); color: var(--bg); }
+.sheet label { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--text-2); margin-top: 10px; }
+.sheet .close { position: absolute; right: 14px; top: 12px; }
+@media (min-width: 700px) {
+  .sheet { left: 50%; right: auto; bottom: auto; top: 50%; width: 460px; border-radius: 22px; transform: translate(-50%, -46%); opacity: 0; transition: transform .2s, opacity .2s; padding-bottom: 22px; }
+  .sheet.open { transform: translate(-50%, -50%); opacity: 1; }
+  .sheet .grab { display: none; }
+}
+
+/* ---------- klein venster naast een element (oude pagina's) ---------- */
+.pop { position: fixed; z-index: 80; background: var(--surface); border-radius: 14px; padding: 12px; min-width: 240px; max-width: calc(100vw - 20px); box-shadow: 0 10px 40px rgba(0,0,0,.25); }
+.pop h4 { margin: 0 0 8px; font-size: 14px; }
+.pop .row { display: flex; gap: 6px; margin: 6px 0; align-items: center; flex-wrap: wrap; } .pop .row > * { flex: 1; }
+.pop .opts { max-height: 260px; overflow: auto; }
+.pop .opt { padding: 7px 10px; cursor: pointer; border-radius: 8px; } .pop .opt:hover, .pop .opt.on { background: var(--surface-2); }
+.pop .muted { color: var(--muted); font-size: 12.5px; }
+
+/* ---------- tooltip van oudere grafieken: op een aanraakscherm boven je vinger ---------- */
+#tip, .tip { background: var(--text) !important; color: var(--bg) !important; border: 0 !important; border-radius: 10px !important; padding: 7px 10px !important; font-size: 12.5px !important; line-height: 1.45; box-shadow: 0 6px 24px rgba(0,0,0,.25); }
+#tip .sub, .tip .sub { color: inherit !important; opacity: .7; }
+html.touch #tip { transform: translate(-40%, calc(-100% - 46px)); }
+
+/* ---------- gedeelde grafiek met slepen ---------- */
+.fchart { position: relative; user-select: none; -webkit-user-select: none; touch-action: pan-y; cursor: crosshair; }
+.fchart svg { display: block; width: 100%; overflow: visible; }
+.fchart .flabel { position: absolute; top: 0; transform: translateX(-50%); font-size: 12px; color: var(--muted); white-space: nowrap; pointer-events: none; font-weight: 500; }
+
+/* ---------- lijsten in apps-stijl ---------- */
+.list { display: flex; flex-direction: column; }
+.li { display: flex; align-items: center; gap: var(--sp3); padding: var(--sp2) 0; min-height: 56px; cursor: pointer; border-radius: 12px; }
+.li .av { flex: none; width: 40px; height: 40px; border-radius: 999px; display: grid; place-items: center; font-size: 17px; font-weight: 700; background: var(--surface-2); color: var(--text-2); }
+.li .mid { flex: 1; min-width: 0; }
+.li .t { font-weight: 600; font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.li .s { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.li .end { text-align: right; font-weight: 600; white-space: nowrap; font-size: 15px; }
+.li .end .s { font-weight: 500; }
+@media (hover: hover) { .li:hover { background: var(--hover); box-shadow: -8px 0 0 var(--hover), 8px 0 0 var(--hover); } }
+
+/* oude terminalkleuren in kleine stukjes tekst */
+.a { color: var(--amber); } .c { color: var(--cyan); } .m { color: var(--muted); } .y { color: var(--accent); }
+.alert { background: var(--surface) !important; border-radius: var(--radius) !important; border: 0 !important; padding: 14px 16px !important; margin-bottom: 12px !important; box-shadow: inset 3px 0 0 var(--neg); }
+#logout { position: static !important; }
+
+[hidden] { display: none !important; }
+
+/* =====================================================================
+   ASCII-STIJL (aan via de schakelaar op het inlogscherm of in Beheer)
+   Tekstbord-look: geen vakken of kaders, knoppen zijn [links], secties gescheiden door lijnen.
+   Zelfde indeling, spatiëring en grafieken.
+   ===================================================================== */
+html.ascii {
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --pix: "Silkscreen", "IBM Plex Mono", ui-monospace, monospace;  /* vierkante pixelcijfers */
+  --frame: color-mix(in srgb, var(--text) 28%, transparent);
+  --link: var(--accent);
+}
+html.ascii body { font-family: var(--mono) !important; font-size: 14px !important; letter-spacing: -.01em; }
+html.ascii *, html.ascii *::before, html.ascii *::after { border-radius: 0 !important; }
+html.ascii ::selection { background: var(--accent); color: var(--bg); }
+html.ascii input, html.ascii select, html.ascii textarea, html.ascii button { font-family: var(--mono) !important; }
+
+/* geen vakken: kaarten zonder achtergrond, gescheiden door een stippellijn */
+html.ascii .card { background: transparent !important; box-shadow: none !important; border-top: 1px dashed var(--frame) !important; }
+html.ascii :is(.tile3, .stats > div, .mstats > div, .facts > div, .nut) { background: transparent !important; box-shadow: none !important; }
+html.ascii .li .av { background: transparent; }
+
+/* titels als citaatlinks */
+html.ascii h2 { text-transform: uppercase !important; letter-spacing: .04em; font-size: 15px !important; }
+html.ascii h2::before { content: ">> "; color: var(--accent); white-space: pre; }
+html.ascii .card h2 { justify-content: flex-start !important; } html.ascii .card h2 > :last-child { margin-left: auto; }
+html.ascii .appbar h1 { font-family: var(--pix); font-weight: 400; font-size: 24px; text-transform: uppercase; letter-spacing: .02em; line-height: 1; text-shadow: 0 0 10px color-mix(in srgb, var(--text) 35%, transparent); }
+html.ascii .appbar h1::after { content: "_"; margin-left: 2px; animation: ablink 1s steps(1) infinite; color: var(--accent); }
+@keyframes ablink { 50% { opacity: 0; } }
+html.ascii .appbar { background: var(--bg); border-bottom: 1px dashed var(--frame); }
+
+/* grote getallen in pixelletters */
+html.ascii :is(.hval, .bbig, .sbig, .big, .readout .big, .acc .at, .stats .v, .tile3 .v) {
+  font-family: var(--pix) !important; font-weight: 400 !important; letter-spacing: 0 !important; line-height: 1.1 !important;
+  text-shadow: 0 0 10px color-mix(in srgb, currentColor 40%, transparent); }
+html.ascii .hval { font-size: 38px; } html.ascii .bbig { font-size: 28px; } html.ascii .sbig { font-size: 30px; }
+html.ascii :is(.big, .readout .big) { font-size: 26px; } html.ascii .acc .at { font-size: 19px; }
+html.ascii .stats .v { font-size: 20px; } html.ascii .tile3 .v { font-size: 20px; white-space: nowrap; }
+html.ascii :is(.dhead, .grp, .tile3 .l, .stats .l, .hlabel, .l) { text-transform: uppercase; letter-spacing: .05em; }
+
+/* knoppen = [links] */
+html.ascii :is(.seg, .seg-toggle, .ranges) { background: transparent !important; outline: 0; box-shadow: none; }
+:root.ascii:not(.x) :is(.seg, .seg-toggle, .ranges) button, html.ascii :is(.btn, .addbtn, .fchip, .opt, .tile3) {
+  background: transparent !important; color: var(--link) !important; box-shadow: none !important; outline: 0 !important; border: 0 !important; text-transform: uppercase; letter-spacing: .03em; }
+:root.ascii:not(.x) :is(.seg, .seg-toggle, .ranges) button::before, html.ascii :is(.btn, .addbtn, .fchip)::before { content: "["; color: var(--muted); }
+:root.ascii:not(.x) :is(.seg, .seg-toggle, .ranges) button::after, html.ascii :is(.btn, .addbtn, .fchip)::after { content: "]"; color: var(--muted); }
+:root.ascii:not(.x) :is(.seg, .seg-toggle, .ranges) button.on, html.ascii :is(.fchip.on, .sheet .opt.on) {
+  background: transparent !important; color: var(--text) !important; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; text-shadow: 0 0 8px color-mix(in srgb, var(--text) 40%, transparent); }
+html.ascii :is(button, a, .li, .acc, .opt):hover { text-decoration: underline; text-underline-offset: 3px; }
+html.ascii .tile3 { color: var(--text) !important; text-transform: none; }
+html.ascii .tile3:hover { text-decoration: none; } html.ascii .tile3:hover .l { text-decoration: underline; }
+html.ascii .iconbtn { background: transparent; box-shadow: none; outline: 0; color: var(--link); width: auto; padding: 0 6px; }
+html.ascii .iconbtn::before { content: "["; color: var(--muted); font: 16px var(--mono); } html.ascii .iconbtn::after { content: "]"; color: var(--muted); font: 16px var(--mono); }
+html.ascii .iconbtn { display: inline-flex; align-items: center; gap: 2px; }
+html.ascii .sheet .opt { padding: 6px 0; }
+
+/* invoervelden: enkel een onderlijn */
+html.ascii input:not([type=checkbox]):not([type=range]), html.ascii select, html.ascii textarea {
+  background: transparent !important; border: 0 !important; border-bottom: 1px dashed var(--frame) !important; caret-color: var(--accent); }
+
+/* status: gekleurde tekst tussen haakjes */
+html.ascii .pill { background: transparent !important; outline: 0; text-transform: uppercase; letter-spacing: 0; padding: 0 !important; font-size: 12px; }
+html.ascii .pill::before { content: "["; } html.ascii .pill::after { content: "]"; }
+
+/* rekeningen: tekstregels met puntjes, in de kleur van de bank */
+html.ascii .acc { background: transparent !important; box-shadow: none !important; padding-left: 0; padding-right: 0; border-bottom: 1px dashed var(--frame); }
+html.ascii .acc.rev { color: var(--text) !important; } html.ascii .acc.ing { color: var(--ing); } html.ascii .acc.cre { color: var(--crelan); } html.ascii .acc.bel { color: #4d8bf0; }
+html.ascii .acc .an, html.ascii .acc .al div span:first-child { overflow: hidden; white-space: nowrap; }
+html.ascii .acc .an::after, html.ascii .acc .al div span:first-child::after { content: " ................................................................"; opacity: .45; }
+html.ascii .acc .al { border-top: 0; opacity: 1; color: var(--text-2); }
+html.ascii .acc .al div { justify-content: flex-start; } html.ascii .acc .al div span:first-child { flex: 1 1 0; min-width: 0; } html.ascii .acc .al div span:last-child { flex: none; }
+html.ascii .acc .an { min-width: 0; }
+
+/* balkjes worden blokjes ▮▮▮ (grafieken blijven zoals ze zijn) */
+html.ascii :is(.pbar, .bbar, .cb, .share, .bar, .alloc, .mac, .sbar, .pbar3) > :is(i, span, div) {
+  -webkit-mask: repeating-linear-gradient(90deg, #000 0 5px, transparent 5px 7px); mask: repeating-linear-gradient(90deg, #000 0 5px, transparent 5px 7px); }
+
+/* tabbalk: [LINKS] */
+html.ascii .tabs { border-top: 1px dashed var(--frame); background: var(--bg) !important; backdrop-filter: none; }
+html.ascii .tabs a { color: var(--link) !important; }
+html.ascii .tabs a span { text-transform: uppercase; letter-spacing: .04em; }
+html.ascii .tabs a.on { color: var(--text) !important; }
+html.ascii .tabs a.on span::before { content: ">"; color: var(--accent); } html.ascii .tabs a.on span::after { content: "<"; color: var(--accent); }
+@media (min-width: 900px) { html.ascii .tabs { border-top: 0; } html.ascii .tabs a.on { background: transparent; box-shadow: none; } }
+
+/* onderblad, melding */
+html.ascii .sheet { box-shadow: none !important; border-top: 1px dashed var(--frame); }
+html.ascii .sheet .grab { background: none; height: auto; width: auto; text-align: center; color: var(--muted); font: 12px/1 var(--mono); }
+html.ascii .sheet .grab::before { content: "═══════"; }
+html.ascii .toast { font-family: var(--mono); box-shadow: none; }
+html.ascii .toast::before { content: "> "; }
+
+/* CRT: dunne scanlijnen over alles */
+html.ascii body::after { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 300;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.14) 0 1px, transparent 1px 3px); }
+
+/* effecten bij tikken */
+html.ascii .a-hit { animation: ahit .16s steps(2) 1; }
+@keyframes ahit { 0% { filter: invert(1) contrast(1.3); } 100% { filter: none; } }
+.a-spark { position: fixed; z-index: 400; pointer-events: none; font: 600 14px/1 "IBM Plex Mono", ui-monospace, monospace; color: var(--accent);
+  transition: transform .45s cubic-bezier(.2,.7,.3,1), opacity .45s; text-shadow: 0 0 6px currentColor; }
+@media (prefers-reduced-motion: reduce) { html.ascii .a-hit, html.ascii .appbar h1::after { animation: none; } }
+html.ascii .acc { overflow: hidden; min-width: 0; } html.ascii .acc .al { min-width: 0; } html.ascii .acc .al div { min-width: 0; }
+:root.ascii:not(.x) :is(.seg, .seg-toggle, .ranges) button { padding-left: 4px !important; padding-right: 4px !important; }
+html.ascii .card h2 .sub { font-size: 12px; text-transform: none; }
+</style><script>// Gedeeld thema: bovenbalk + tabbalk, bedragen verbergen, server-API, onderbladen en grafieken waarop je kan slepen.
+(() => {
+  const TAILNET = "https://servermad.tailf0e9e1.ts.net";
+  const onServer = !window.SITE_MODE && location.protocol.startsWith("http") && !location.hostname.endsWith("github.io");
+  const snap = location.protocol === "file:";  // openbare momentopname wordt uit een bestand opgebouwd
+  const pub = snap || !!window.PUBLIC || location.pathname.includes("/openbaar/");
+  const ghBase = snap ? "/financien/" : (() => { const p = location.pathname, i = p.indexOf("/financien/"); return i >= 0 ? p.slice(0, i + 11) : "/"; })();
+  const base = onServer ? "/" : ghBase + (pub ? "openbaar/" : "");
+  const I = {
+    dash: '<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+    bel: '<path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/>',
+    proj: '<path d="M5 21V4"/><path d="M5 4h12l-2.5 4L17 12H5"/>',
+    bood: '<circle cx="9" cy="20" r="1.3"/><circle cx="18" cy="20" r="1.3"/><path d="M2 3h3l2.6 12.2h11.2L21.5 7H6"/>',
+    beheer: '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>',
+    eye: '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    eyeoff: '<path d="M2 12s3.6-7 10-7c2 0 3.8.7 5.2 1.6M22 12s-3.6 7-10 7c-2 0-3.8-.7-5.2-1.6"/><path d="M3 3l18 18"/>',
+    refresh: '<path d="M20 12a8 8 0 1 1-2.4-5.7"/><path d="M20 4v5h-5"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+    out: '<path d="M15 4h4a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-4"/><path d="M10 17l5-5-5-5M15 12H3"/>',
+  };
+  const svgI = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${I[k]}</svg>`;
+  const PAGES = [["dash", "Overzicht", ""], ["bel", "Beleggen", "beleggingen"], ["bood", "Boodschappen", "boodschappen"], ["beheer", "Beheer", "beheer"]];  // toekomst zit nu in Beleggen
+  const TITLES = { dash: "Overzicht", bel: "Beleggingen", proj: "Toekomst", bood: "Boodschappen", beheer: "Beheer" };
+  const href = p => p === "beheer" ? (onServer ? "/beheer" : base + "beheer/") : base + (p ? (onServer ? p : p + "/") : "");  // Beheer staat nu ook op de online site
+  window.FIN = window.FIN || {};
+
+  // ---------- ASCII-stijl: zelfde app, andere letters en effecten (voorkeur op dit toestel) ----------
+  const FONTS = "https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Silkscreen&display=swap";
+  const loadFonts = () => { if (document.getElementById("asciiFonts")) return;
+    const l = document.createElement("link"); l.id = "asciiFonts"; l.rel = "stylesheet"; l.href = FONTS; document.head.appendChild(l); };
+  FIN.ascii = () => document.documentElement.classList.contains("ascii");
+  FIN.setStyle = on => { document.documentElement.classList.toggle("ascii", on); try { localStorage.setItem("fin_style", on ? "ascii" : "normaal"); } catch (e) {}
+    if (on) { loadFonts(); setTimeout(decodeAll, 50); } };
+  // stijl meegegeven in de link (Beheer draait op een ander adres, dat de keuze anders niet kent)
+  try { const st = new URLSearchParams(location.search).get("stijl");
+    if (st === "ascii" || st === "normaal") { localStorage.setItem("fin_style", st);
+      const u = new URL(location.href); u.searchParams.delete("stijl"); history.replaceState(null, "", u.pathname + u.search + u.hash); } } catch (e) {}
+  let styleOn = true; try { styleOn = localStorage.getItem("fin_style") !== "normaal"; } catch (e) {}  // ASCII is de standaard
+  if (styleOn) { document.documentElement.classList.add("ascii"); loadFonts(); }
+
+  // grote getallen "ontcijferen" bij het openen
+  const GLYPHS = "0123456789#%&$@*+=?";
+  function decode(el) {
+    const nodes = []; const w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) if (/\d/.test(n.nodeValue)) nodes.push([n, n.nodeValue]);
+    if (!nodes.length) return; const t0 = performance.now(), D = 520;
+    const step = t => { const k = Math.min(1, (t - t0) / D);
+      for (const [nd, fin] of nodes) { if (!nd.isConnected) continue; let i = 0;
+        nd.nodeValue = fin.replace(/\d/g, ch => (i++ / 12 < k * 1.15 ? ch : GLYPHS[Math.random() * GLYPHS.length | 0])); }
+      if (k < 1) requestAnimationFrame(step); else for (const [nd, fin] of nodes) if (nd.isConnected) nd.nodeValue = fin; };
+    requestAnimationFrame(step);
+  }
+  function decodeAll() { if (!FIN.ascii() || document.documentElement.classList.contains("priv") || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    document.querySelectorAll(".hval, .bbig, .acc .at, .stats .v, .tile3 .v, .readout .big, #nutri .big").forEach(decode); }
+  addEventListener("load", () => setTimeout(decodeAll, 80));
+
+  // tikken: kort omgekeerd oplichten + ASCII-vonken
+  const SPARK = ["*", "+", "·", "×", "#", "░", "▒", "/"];
+  document.addEventListener("pointerdown", e => {
+    if (!FIN.ascii() || e.button > 0) return;
+    const hit = e.target.closest && e.target.closest("button, a, .li, .acc, .tile3, .pot, .opt, input[type=range]");
+    if (hit && !hit.closest(".fchart")) { hit.classList.remove("a-hit"); void hit.offsetWidth; hit.classList.add("a-hit"); setTimeout(() => hit.classList.remove("a-hit"), 200); }
+    if (e.target.closest && e.target.closest(".fchart")) return;  // in een grafiek: enkel slepen, geen vonken
+    for (let i = 0; i < 7; i++) {
+      const sp = document.createElement("span"); sp.className = "a-spark"; sp.textContent = SPARK[Math.random() * SPARK.length | 0];
+      sp.style.left = e.clientX - 4 + "px"; sp.style.top = e.clientY - 7 + "px"; document.body.appendChild(sp);
+      const ang = Math.random() * Math.PI * 2, dist = 18 + Math.random() * 26;
+      requestAnimationFrame(() => { sp.style.transform = `translate(${Math.cos(ang) * dist}px, ${Math.sin(ang) * dist}px) rotate(${(Math.random() - .5) * 90}deg)`; sp.style.opacity = "0"; });
+      setTimeout(() => sp.remove(), 480);
+    }
+  }, { passive: true, capture: true });
+  FIN.onServer = onServer; FIN.public = pub; FIN.canEdit = !pub;
+  FIN.apiBase = onServer ? "" : TAILNET;
+  FIN.icon = svgI;
+  FIN.href = k => { const p = PAGES.find(x => x[0] === k); return p ? href(p[2] === "beheer" ? "beheer" : p[2]) : "#"; };
+
+  // ---------- opmaak ----------
+  FIN.eur = (v, d = 0) => (v < 0 ? "−" : "") + "€" + Math.abs(v).toLocaleString("nl-BE", { minimumFractionDigits: d, maximumFractionDigits: d });
+  FIN.signed = (v, d = 0) => (v >= 0 ? "+" : "−") + "€" + Math.abs(v).toLocaleString("nl-BE", { minimumFractionDigits: d, maximumFractionDigits: d });
+  FIN.pct = v => (v >= 0 ? "+" : "−") + Math.abs(v * 100).toLocaleString("nl-BE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + "%";
+  FIN.esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  // ---------- bedragen verbergen ----------
+  const EURO = /([−+\-]?\s?€\s?)(\d[\d.  ]*(?:,\d+)?)/g;
+  const orig = new Map();
+  const maskNode = n => {
+    const t = n.nodeValue; if (!t || !t.includes("€") || !/€\s?\d/.test(t)) return;
+    if (!orig.has(n)) orig.set(n, t);
+    n.nodeValue = t.replace(EURO, (m, pre, num) => pre + (pub ? "•••" : num.replace(/\d/g, "•")));  // openbaar: ook de grootte verbergen
+  };
+  const walk = root => { const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) maskNode(n); };
+  let mo = null;
+  FIN.setPriv = on => {
+    document.documentElement.classList.toggle("priv", on);
+    if (!pub) try { localStorage.setItem("fin_priv", on ? "1" : "0"); } catch (e) {}
+    const b = document.getElementById("privBtn"); if (b) { b.innerHTML = svgI(on ? "eyeoff" : "eye"); b.title = on ? "Bedragen tonen" : "Bedragen verbergen"; }
+    if (on) { walk(document.body);
+      mo = mo || new MutationObserver(ms => { for (const m of ms) { if (m.type === "characterData") maskNode(m.target); else m.addedNodes.forEach(x => x.nodeType === 3 ? maskNode(x) : x.nodeType === 1 && walk(x)); } });
+      mo.observe(document.body, { subtree: true, childList: true, characterData: true });
+    } else { if (mo) mo.disconnect(); for (const [n, t] of orig) if (n.isConnected && /•/.test(n.nodeValue)) n.nodeValue = t; orig.clear(); }
+  };
+
+  // ---------- melding ----------
+  FIN.toast = (msg, err = false, ms = 3000) => {
+    document.querySelectorAll(".toast").forEach(t => t.remove());
+    const t = document.createElement("div"); t.className = "toast" + (err ? " err" : ""); t.textContent = msg;
+    document.body.appendChild(t); setTimeout(() => t.remove(), ms);
+  };
+
+  // ---------- server-API (beheer-acties) ----------
+  FIN.api = async (action, args = {}) => {
+    let r;
+    try { r = await fetch(FIN.apiBase + "/api/beheer", { method: "POST", headers: { "X-Dashboard": "1", "Content-Type": "application/json" }, body: JSON.stringify({ action, args }) }); }
+    catch (e) { throw new Error(onServer ? "server niet bereikbaar" : "server niet bereikbaar: staat Tailscale aan?"); }
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.fout || "serverfout " + r.status);
+    return j;
+  };
+
+  // ---------- onderblad (gsm) / venster (computer) ----------
+  let sheet = null;
+  FIN.closeSheet = () => { if (!sheet) return; const [bg, s] = sheet; sheet = null; bg.classList.remove("open"); s.classList.remove("open"); setTimeout(() => { bg.remove(); s.remove(); }, 250); document.documentElement.style.overflow = ""; };
+  FIN.sheet = html => {
+    FIN.closeSheet(); FIN.closePop();
+    const bg = document.createElement("div"); bg.className = "sheet-bg";
+    const s = document.createElement("div"); s.className = "sheet"; s.setAttribute("role", "dialog");
+    s.innerHTML = `<div class="grab"></div>${html}`;
+    document.body.append(bg, s); sheet = [bg, s];
+    document.documentElement.style.overflow = "hidden";
+    requestAnimationFrame(() => { bg.classList.add("open"); s.classList.add("open"); });
+    bg.onclick = FIN.closeSheet;
+    // naar beneden vegen om te sluiten
+    let y0 = null;
+    s.addEventListener("touchstart", e => { y0 = s.scrollTop <= 0 ? e.touches[0].clientY : null; }, { passive: true });
+    s.addEventListener("touchmove", e => { if (y0 == null) return; const dy = e.touches[0].clientY - y0; if (dy > 0) { s.style.transition = "none"; s.style.transform = `translateY(${dy}px)`; } }, { passive: true });
+    s.addEventListener("touchend", e => { if (y0 == null) return; const dy = e.changedTouches[0].clientY - y0; s.style.transition = ""; s.style.transform = ""; y0 = null; if (dy > 90) FIN.closeSheet(); });
+    return s;
+  };
+
+  // ---------- klein venster naast een element (oudere pagina's) ----------
+  let pop = null;
+  FIN.closePop = () => { if (pop) { pop.remove(); pop = null; } };
+  FIN.pop = (anchor, html) => {
+    if (matchMedia("(max-width: 700px)").matches) return FIN.sheet(html.replace(/<h4>/g, "<h3>").replace(/<\/h4>/g, "</h3>"));
+    FIN.closePop(); pop = document.createElement("div"); pop.className = "pop"; pop.innerHTML = html; document.body.appendChild(pop);
+    const r = anchor.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
+    pop.style.left = Math.max(8, Math.min(r.left, innerWidth - w - 8)) + "px";
+    pop.style.top = (r.bottom + h + 8 < innerHeight ? r.bottom + 4 : Math.max(8, r.top - h - 4)) + "px";
+    setTimeout(() => { const f = pop && pop.querySelector("input,select"); if (f) f.focus(); }, 0);
+    return pop;
+  };
+  document.addEventListener("mousedown", e => { if (pop && !pop.contains(e.target)) FIN.closePop(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") { FIN.closePop(); FIN.closeSheet(); } });
+
+  // ---------- grafieken waarop je kan slepen ----------
+  // Muis: bewegen = waarde zien. Aanraakscherm: vinger op de grafiek en zijwaarts slepen (verticaal = gewoon scrollen).
+  function scrubber(el, n, xOf, onMove, onEnd, onTap) {
+    let active = false, sx = 0, moved = false;
+    const idx = e => { const r = el.getBoundingClientRect(), px = e.clientX - r.left; let best = 0, bd = 1e9;
+      for (let i = 0; i < n; i++) { const d = Math.abs(xOf(i) - px); if (d < bd) { bd = d; best = i; } } return best; };
+    el.addEventListener("pointerdown", e => { active = true; sx = e.clientX; moved = false; if (e.pointerType !== "mouse") { try { el.setPointerCapture(e.pointerId); } catch (_) {} } onMove(idx(e)); });
+    el.addEventListener("pointermove", e => { if (Math.abs(e.clientX - sx) > 6) moved = true; if (active || e.pointerType === "mouse") onMove(idx(e)); });
+    const end = e => { const was = active; active = false; if (e.type === "pointerup" && was && !moved && onTap) onTap(idx(e)); if (e.pointerType !== "mouse" || e.type === "pointerleave") onEnd(); };
+    el.addEventListener("pointerup", end); el.addEventListener("pointercancel", end); el.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") end(e); });
+  }
+  const niceStep = span => { const raw = span / 3, p = Math.pow(10, Math.floor(Math.log10(raw || 1))); return [1, 2, 2.5, 5, 10].map(m => m * p).find(s => raw <= s); };
+
+  /* FIN.line(el, {series:[{vals, color, width, dash, fill}], height, base (gestippelde nullijn), axis (y-labels rechts), fmt, label(i), onScrub(i|null)}) */
+  FIN.line = (el, o) => {
+    o = { ...o, label: null };  // geen zwevende labels: de waarde staat bovenaan de pagina, zoals in een bank-app
+    const S = o.series.filter(s => s.vals && s.vals.length), n = S.length ? S[0].vals.length : 0;
+    const W = Math.max(200, el.clientWidth), H = o.height || 200, T = o.label ? 22 : 8, B = o.xlabels ? 22 : 6, R = o.axis ? 46 : 2, L = 2;
+    el.classList.add("fchart");
+    if (!n) { el.innerHTML = `<div class="sub" style="padding:20px 0">Nog geen gegevens.</div>`; return; }
+    const all = S.flatMap(s => s.lo ? [...s.vals, ...s.lo] : s.vals).filter(v => v != null); if (o.base != null) all.push(o.base); if (o.zero) all.push(0);
+    let lo = Math.min(...all), hi = Math.max(...all); if (hi - lo < 1e-9) { hi += 1; lo -= 1; }
+    let step = null; if (o.axis) { step = niceStep(hi - lo); lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step; }
+    else { const pad = (hi - lo) * .08; lo -= pad; hi += pad; }
+    const x = i => L + (W - L - R) * (n === 1 ? .5 : i / (n - 1)), y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+    const P = vals => { let s = "", on = false; vals.forEach((v, i) => { if (v == null) { on = false; return; } s += `${on ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`; on = true; }); return s; };
+    let g = "";
+    if (o.axis) for (let v = lo; v <= hi + step / 2; v += step) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${W - R + 6}" y="${y(v) + 4}">${(o.fmt || FIN.eur)(Math.abs(v) < step / 1e6 ? 0 : v)}</text>`;
+    if (o.xlabels) { const k = Math.min(n, W < 420 ? 3 : 5); for (let j = 0; j < k; j++) { const i = Math.round(j * (n - 1) / Math.max(1, k - 1));
+      g += `<text x="${x(i)}" y="${H - 5}" text-anchor="${j === 0 ? "start" : j === k - 1 ? "end" : "middle"}">${o.xlabels(i)}</text>`; } }
+    if (o.base != null) g += `<line x1="${L}" x2="${W - R}" y1="${y(o.base)}" y2="${y(o.base)}" stroke="var(--muted)" stroke-dasharray="1 4" stroke-linecap="round" opacity=".7"/>`;
+    const gid = "g" + Math.random().toString(36).slice(2, 8);
+    S.forEach((s, k) => {
+      if (s.lo) {  // band tussen twee reeksen (bv. kansmarge)
+        g += `<path d="${P(s.vals)}${s.lo.map((v, i) => `L${x(s.lo.length - 1 - i).toFixed(1)},${y(s.lo[s.lo.length - 1 - i]).toFixed(1)}`).join("")}Z" fill="${s.color}" opacity="${s.opacity || .15}"/>`;
+        return; }
+      if (s.fill) { const first = s.vals.findIndex(v => v != null);
+        g += `<defs><linearGradient id="${gid}${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${s.color}" stop-opacity=".22"/><stop offset="1" stop-color="${s.color}" stop-opacity="0"/></linearGradient></defs>
+          <path d="${P(s.vals)}L${x(n - 1)},${H - B}L${x(first)},${H - B}Z" fill="url(#${gid}${k})"/>`; }
+      g += `<path d="${P(s.vals)}" fill="none" stroke="${s.color}" stroke-width="${s.width || 2}" stroke-linejoin="round" stroke-linecap="round" ${s.dash ? `stroke-dasharray="${s.dash}"` : ""}/>`;
+    });
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}<line class="cx" y1="${T - 4}" y2="${H - B}" stroke="var(--muted)" stroke-width="1" opacity="0"/>
+      ${S.map((s, k) => s.dot === false || s.lo ? "" : `<circle class="cd" data-k="${k}" r="5" fill="${s.color}" stroke="var(--surface)" stroke-width="2" opacity="0"/>`).join("")}</svg>${o.label ? `<div class="flabel" style="opacity:0"></div>` : ""}`;
+    const svg = el.querySelector("svg"), cx = svg.querySelector(".cx"), dots = [...svg.querySelectorAll(".cd")], lab = el.querySelector(".flabel");
+    scrubber(el, n, x, i => {
+      cx.setAttribute("x1", x(i)); cx.setAttribute("x2", x(i)); cx.setAttribute("opacity", .6);
+      dots.forEach(d => { const v = S[+d.dataset.k].vals[i]; if (v == null) return d.setAttribute("opacity", 0); d.setAttribute("cx", x(i)); d.setAttribute("cy", y(v)); d.setAttribute("opacity", 1); });
+      if (lab) { lab.textContent = o.label(i); lab.style.opacity = 1; lab.style.left = Math.max(lab.offsetWidth / 2, Math.min(W - R - lab.offsetWidth / 2, x(i))) + "px"; }
+      if (o.onScrub) o.onScrub(i);
+    }, () => { cx.setAttribute("opacity", 0); dots.forEach(d => d.setAttribute("opacity", 0)); if (lab) lab.style.opacity = 0; if (o.onScrub) o.onScrub(null); });
+  };
+
+  /* FIN.bars(el, {labels, series:[{vals, color (kleur of functie v,i)}], height, axis, fmt, xlabel(i), selected, onScrub(i|null), onPick(i)}) */
+  FIN.bars = (el, o) => {
+    const n = o.labels.length, S = o.series, W = Math.max(200, el.clientWidth), H = o.height || 180, T = 8, B = 22, R = o.axis ? 46 : 0, L = 0;
+    el.classList.add("fchart");
+    if (!n) { el.innerHTML = `<div class="sub" style="padding:20px 0">Nog geen gegevens.</div>`; return; }
+    const all = S.flatMap(s => s.vals); let lo = Math.min(0, ...all), hi = Math.max(0, ...all, 1e-9);
+    const step = niceStep(hi - lo); lo = Math.floor(lo / step + 1e-9) * step; hi = Math.ceil(hi / step - 1e-9) * step; if (hi === lo) hi = lo + step;
+    const slot = (W - L - R) / n, x = i => L + slot * (i + .5), y = v => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+    const gap = S.length > 1 ? 2 : 0, bw = Math.max(3, Math.min(26, (slot * .62 - gap * (S.length - 1)) / S.length));
+    let g = "";
+    if (o.axis) for (let v = lo; v <= hi + step / 2; v += step) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/><text x="${W - R + 6}" y="${y(v) + 4}">${(o.fmt || FIN.eur)(Math.abs(v) < step / 1e6 ? 0 : v)}</text>`;
+    if (lo < 0) g += `<line x1="${L}" x2="${W - R}" y1="${y(0)}" y2="${y(0)}" stroke="var(--muted)" opacity=".5"/>`;
+    for (let i = 0; i < n; i++) {
+      const tot = S.length * bw + gap * (S.length - 1); let bars = "";
+      S.forEach((s, k) => { const v = s.vals[i]; if (!v) return; const x0 = x(i) - tot / 2 + k * (bw + gap), y0 = y(0), y1 = y(v), h = Math.abs(y0 - y1), r = Math.min(4, h, bw / 2), up = v > 0;
+        const c = typeof s.color === "function" ? s.color(v, i) : s.color;
+        bars += up ? `<path d="M${x0},${y0}V${y1 + r}q0,-${r} ${r},-${r}H${x0 + bw - r}q${r},0 ${r},${r}V${y0}Z" fill="${c}"/>`
+                   : `<path d="M${x0},${y0}V${y1 - r}q0,${r} ${r},${r}H${x0 + bw - r}q${r},0 ${r},-${r}V${y0}Z" fill="${c}"/>`; });
+      g += `<g class="bg" data-i="${i}" opacity="${o.selected != null && o.selected !== i ? .4 : 1}">${bars}</g>`;
+    }
+    const k = n <= 13 ? n : Math.min(n, W < 420 ? 4 : 6), every = n <= 13 ? (W / n < 26 ? 2 : 1) : null;
+    if (o.xlabel) for (let j = 0; j < (every ? n : k); j++) { const i = every ? j : Math.round(j * (n - 1) / Math.max(1, k - 1)); if (every && (n - 1 - i) % every) continue;
+      g += `<text x="${x(i)}" y="${H - 5}" text-anchor="middle" style="${o.selected === i ? "fill:var(--text);font-weight:700" : ""}">${o.xlabel(i)}</text>`; }
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}">${g}</svg>`;
+    const groups = [...el.querySelectorAll(".bg")];
+    const dim = i => groups.forEach((gg, j) => gg.setAttribute("opacity", i == null ? (o.selected != null && o.selected !== j ? .4 : 1) : j === i ? 1 : .35));
+    scrubber(el, n, x, i => { dim(i); if (o.onScrub) o.onScrub(i); }, () => { dim(null); if (o.onScrub) o.onScrub(null); }, o.onPick);
+  };
+
+  // ---------- oudere grafieken (mousemove) laten werken met een vinger ----------
+  let tsvg = null;
+  addEventListener("pointerdown", e => { if (e.pointerType === "touch") document.documentElement.classList.add("touch"); }, { passive: true, capture: true });
+  const fwd = e => {
+    if (e.pointerType !== "touch") return;
+    const t = document.elementFromPoint(e.clientX, e.clientY), s = t && t.closest && t.closest("svg");
+    if (e.type === "pointerdown") tsvg = s && !s.closest(".fchart") ? s : null;
+    if (!tsvg) return;
+    (t && tsvg.contains(t) ? t : tsvg).dispatchEvent(new MouseEvent("mousemove", { clientX: e.clientX, clientY: e.clientY, bubbles: true }));
+  };
+  addEventListener("pointerdown", fwd, { passive: true }); addEventListener("pointermove", fwd, { passive: true });
+  const tend = () => { if (tsvg) { tsvg.dispatchEvent(new MouseEvent("mouseleave")); tsvg = null; } };
+  addEventListener("pointerup", tend); addEventListener("pointercancel", tend);
+
+  // ---------- bovenbalk + tabbalk ----------
+  const queued = [];
+  FIN.addAction = (icon, title, onclick, id) => {
+    const acts = document.querySelector(".appbar .acts"); if (!acts) { queued.push([icon, title, onclick, id]); return null; }
+    const b = document.createElement("button"); b.className = "iconbtn"; b.title = title; b.setAttribute("aria-label", title); b.innerHTML = svgI(icon); b.onclick = onclick; if (id) b.id = id;
+    acts.prepend(b); return b;
+  };
+  function bar() {
+    const page = window.PAGE || "dash";
+    const pages = PAGES.filter(([k]) => !(pub && k === "beheer"));
+    const el = document.createElement("div"); el.className = "appbar";
+    el.innerHTML = `<div class="in"><h1>${TITLES[page] || ""}</h1><nav class="tabs" id="tabs">${pages.map(([k, l, p]) =>
+      `<a href="${href(p === "beheer" ? "beheer" : p)}" class="${k === page ? "on" : ""}" ${k === page ? 'aria-current="page"' : ""}>${svgI(k)}<span>${l}</span></a>`).join("")}</nav>
+      <div class="acts">${pub ? "" : `<button id="privBtn" class="iconbtn" aria-label="Bedragen verbergen">${svgI("eye")}</button>`}</div></div>`;
+    document.body.prepend(el);
+    // op gsm staat de tabbalk vast onderaan; op een computer in de bovenbalk
+    const tabs = el.querySelector(".tabs"), mq = matchMedia("(min-width: 900px)");
+    const place = () => { if (mq.matches) el.querySelector(".in").insertBefore(tabs, el.querySelector(".acts")); else document.body.appendChild(tabs); };
+    place(); mq.addEventListener ? mq.addEventListener("change", place) : mq.addListener(place);
+    // naar een ander adres (bv. Beheer op de server): de gekozen stijl meegeven
+    tabs.addEventListener("click", e => { const t = e.target.closest("a"); if (!t) return;
+      try { const u = new URL(t.href, location.href); if (u.origin !== location.origin) { u.searchParams.set("stijl", FIN.ascii() ? "ascii" : "normaal"); t.href = u.href; } } catch (er) {} });
+    const pb = document.getElementById("privBtn"); if (pb) pb.onclick = () => FIN.setPriv(!document.documentElement.classList.contains("priv"));
+    const lo = document.getElementById("logout"); if (lo) { lo.className = "iconbtn"; lo.removeAttribute("style"); lo.innerHTML = svgI("out"); lo.title = "Afmelden"; el.querySelector(".acts").appendChild(lo); }
+    document.addEventListener("keydown", e => {
+      if (e.metaKey || e.ctrlKey || e.altKey || /input|select|textarea/i.test(document.activeElement.tagName)) return;
+      if (/^[1-4]$/.test(e.key)) { const a = document.querySelectorAll("#tabs a")[+e.key - 1]; if (a) a.click(); }
+      else if (e.key.toLowerCase() === "b" && pb) pb.click();
+      else if (e.key === "/") { const q = document.querySelector("input[type=search]"); if (q) { e.preventDefault(); q.focus(); } }
+    });
+    queued.splice(0).forEach(a => FIN.addAction(...a));
+    let on = false; try { on = localStorage.getItem("fin_priv") === "1"; } catch (e) {}
+    if (pub) { FIN.setPriv(true);  // openbaar: bedragen altijd verborgen, met een knop om te ontgrendelen
+      const lock = FIN.addAction("lock", "Ontgrendelen met code", () => { location.href = ghBase; }); }
+    else if (on) FIN.setPriv(true);
+    document.dispatchEvent(new Event("fin:ready"));
+  }
+  // de afmeldknop wordt pas na de pagina toegevoegd: dan alsnog in de bovenbalk zetten
+  addEventListener("load", () => { const lo = document.getElementById("logout"), acts = document.querySelector(".appbar .acts");
+    if (lo && acts && !acts.contains(lo)) { lo.className = "iconbtn"; lo.removeAttribute("style"); lo.innerHTML = svgI("out"); lo.title = "Afmelden"; acts.appendChild(lo); } });
+  // online: aangemeld zolang de app of site open is (en je de laatste 30 min iets deed); sluiten = afgemeld
+  if (window.SITE_MODE && !pub) {
+    const touch = () => { try { const s = JSON.parse(sessionStorage.getItem("fin_sess") || "null"); if (s) { s.exp = Date.now() + 30 * 60 * 1000; sessionStorage.setItem("fin_sess", JSON.stringify(s)); } } catch (e) {} };
+    let last = 0; ["click", "keydown", "scroll", "touchstart"].forEach(ev => addEventListener(ev, () => { if (Date.now() - last > 30000) { last = Date.now(); touch(); } }, { passive: true }));
+    touch();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", bar); else bar();
+})();
+</script></head>
+<body>
+<div class="wrap">
+  <div hidden><div id="mcNote"></div><span id="hY"></span><div id="sum"></div><table id="whatif"></table><div id="crash"></div><table id="crashT"></table><div id="crashNote"></div></div>
+  <div class="cols">
+    <div class="col">
+      <section id="hero">
+        <div class="hlabel" id="hlabel"></div>
+        <div class="hval" id="hval"></div>
+        <div class="hsub" id="hsub"></div>
+        <div id="mc"></div>
+        <div class="seg" id="hor"><button data-y="5">5J</button><button data-y="10">10J</button><button data-y="20">20J</button><button data-y="30">30J</button><button data-y="40">40J</button></div>
+      </section>
+
+      <section class="card">
+        <div class="ctl">
+          <div><div class="row"><span class="lbl">Inleg per maand</span><input type="number" id="depN" min="0" step="10" inputmode="numeric"></div>
+            <input type="range" id="dep" min="0" max="1500" step="10"></div>
+          <label class="switch"><span>In euro van vandaag (2% inflatie)</span><input type="checkbox" id="real"></label>
+          <div class="sub" id="basis" hidden></div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="col">
+      <section class="card"><h2>Mijlpalen</h2><table id="miles"></table></section>
+      <section class="card"><h2>Financiële vrijheid</h2><div class="kv" id="fire"></div></section>
+    </div>
+  </div>
+</div>
+<script>
+const D = {"beleg": [["2023-10-13", 3.66, 3.66], ["2023-10-14", 3.66, 3.66], ["2023-10-15", 3.66, 3.66], ["2023-10-16", 3.66, 3.66], ["2023-10-17", 3.62, 3.66], ["2023-10-18", 3.59, 3.66], ["2023-10-19", 3.57, 3.66], ["2023-10-20", 3.57, 3.66], ["2023-10-21", 3.57, 3.66], ["2023-10-22", 3.57, 3.66], ["2023-10-23", 3.49, 3.66], ["2023-10-24", 3.53, 3.66], ["2023-10-25", 3.49, 3.66], ["2023-10-26", 3.4, 3.66], ["2023-10-27", 3.4, 3.66], ["2023-10-28", 3.4, 3.66], ["2023-10-29", 3.4, 3.66], ["2023-10-30", 3.48, 3.66], ["2023-10-31", 3.47, 3.66], ["2023-11-01", 3.54, 3.66], ["2023-11-02", 3.62, 3.66], ["2023-11-03", 3.59, 3.66], ["2023-11-04", 3.59, 3.66], ["2023-11-05", 3.59, 3.66], ["2023-11-06", 3.61, 3.66], ["2023-11-07", 3.66, 3.66], ["2023-11-08", 3.68, 3.66], ["2023-11-09", 3.67, 3.66], ["2023-11-10", 3.77, 3.66], ["2023-11-11", 3.77, 3.66], ["2023-11-12", 3.77, 3.66], ["2023-11-13", 3.72, 3.66], ["2023-11-14", 3.77, 3.66], ["2023-11-15", 3.72, 3.66], ["2023-11-16", 3.77, 3.66], ["2023-11-17", 3.77, 3.66], ["2023-11-18", 3.77, 3.66], ["2023-11-19", 3.77, 3.66], ["2023-11-20", 3.79, 3.66], ["2023-11-21", 3.76, 3.66], ["2023-11-22", 3.77, 3.66], ["2023-11-23", 3.77, 3.66], ["2023-11-24", 3.76, 3.66], ["2023-11-25", 3.76, 3.66], ["2023-11-26", 3.76, 3.66], ["2023-11-27", 3.73, 3.66], ["2023-11-28", 3.75, 3.66], ["2023-11-29", 3.71, 3.66], ["2023-11-30", 3.73, 3.66], ["2023-12-01", 3.79, 3.66], ["2023-12-02", 3.79, 3.66], ["2023-12-03", 3.79, 3.66], ["2023-12-04", 3.75, 3.66], ["2023-12-05", 3.85, 3.66], ["2023-12-06", 3.84, 3.66], ["2023-12-07", 3.89, 3.66], ["2023-12-08", 3.91, 3.66], ["2023-12-09", 3.91, 3.66], ["2023-12-10", 3.91, 3.66], ["2023-12-11", 3.88, 3.66], ["2023-12-12", 3.9, 3.66], ["2023-12-13", 3.95, 3.66], ["2023-12-14", 132.16, 132.01], ["2023-12-15", 131.74, 132.01], ["2023-12-16", 131.74, 132.01], ["2023-12-17", 131.74, 132.01], ["2023-12-18", 131.79, 132.01], ["2023-12-19", 131.95, 132.01], ["2023-12-20", 132.39, 132.01], ["2023-12-21", 131.4, 132.01], ["2023-12-22", 129.3, 129.43], ["2023-12-23", 129.3, 129.43], ["2023-12-24", 129.3, 129.43], ["2023-12-25", 129.3, 129.43], ["2023-12-26", 129.3, 129.43], ["2023-12-27", 128.83, 129.43], ["2023-12-28", 129.34, 129.43], ["2023-12-29", 129.62, 129.43], ["2023-12-30", 129.62, 129.43], ["2023-12-31", 129.62, 129.43], ["2024-01-01", 129.61, 129.43], ["2024-01-02", 129.55, 129.44], ["2024-01-03", 128.96, 129.44], ["2024-01-04", 128.9, 129.44], ["2024-01-05", 128.63, 129.44], ["2024-01-06", 128.63, 129.44], ["2024-01-07", 128.63, 129.44], ["2024-01-08", 128.89, 129.44], ["2024-01-09", 129.82, 129.44], ["2024-01-10", 129.9, 129.44], ["2024-01-11", 129.36, 129.44], ["2024-01-12", 130.3, 129.44], ["2024-01-13", 130.3, 129.44], ["2024-01-14", 130.3, 129.44], ["2024-01-15", 130.39, 129.44], ["2024-01-16", 130.73, 129.44], ["2024-01-17", 129.82, 129.44], ["2024-01-18", 130.35, 129.44], ["2024-01-19", 130.8, 129.44], ["2024-01-20", 130.8, 129.44], ["2024-01-21", 130.8, 129.44], ["2024-01-22", 132.3, 129.44], ["2024-01-23", 132.47, 129.44], ["2024-01-24", 133.19, 129.44], ["2024-01-25", 133.76, 129.44], ["2024-01-26", 192.26, 188.35], ["2024-01-27", 192.26, 188.35], ["2024-01-28", 192.26, 188.35], ["2024-01-29", 195.29, 188.35], ["2024-01-30", 195.91, 188.35], ["2024-01-31", 193.71, 188.35], ["2024-02-01", 193.88, 188.35], ["2024-02-02", 195.34, 188.35], ["2024-02-03", 195.34, 188.35], ["2024-02-04", 195.34, 188.35], ["2024-02-05", 193.83, 188.35], ["2024-02-06", 195.68, 188.35], ["2024-02-07", 196.97, 188.35], ["2024-02-08", 197.56, 188.35], ["2024-02-09", 199.07, 188.35], ["2024-02-10", 199.07, 188.35], ["2024-02-11", 199.07, 188.35], ["2024-02-12", 198.36, 188.35], ["2024-02-13", 195.93, 188.35], ["2024-02-14", 196.14, 188.36], ["2024-02-15", 196.82, 188.36], ["2024-02-16", 197.39, 188.36], ["2024-02-17", 138.49, 129.46], ["2024-02-18", 138.49, 129.46], ["2024-02-19", 138.22, 129.46], ["2024-02-20", 136.83, 129.46], ["2024-02-21", 136.68, 129.46], ["2024-02-22", 139.01, 129.46], ["2024-02-23", 139.55, 129.46], ["2024-02-24", 139.55, 129.46], ["2024-02-25", 139.55, 129.46], ["2024-02-26", 139.0, 129.46], ["2024-02-27", 138.82, 129.46], ["2024-02-28", 138.88, 129.46], ["2024-02-29", 139.26, 129.46], ["2024-03-01", 140.19, 129.46], ["2024-03-02", 140.19, 129.46], ["2024-03-03", 140.19, 129.46], ["2024-03-04", 140.13, 129.46], ["2024-03-05", 139.22, 129.46], ["2024-03-06", 139.78, 129.46], ["2024-03-07", 140.35, 129.46], ["2024-03-08", 140.37, 129.46], ["2024-03-09", 140.37, 129.46], ["2024-03-10", 140.37, 129.46], ["2024-03-11", 139.46, 129.46], ["2024-03-12", 140.6, 129.46], ["2024-03-13", 140.67, 129.46], ["2024-03-14", 140.8, 129.46], ["2024-03-15", 139.9, 129.46], ["2024-03-16", 139.9, 129.46], ["2024-03-17", 139.9, 129.46], ["2024-03-18", 141.16, 129.46], ["2024-03-19", 141.37, 129.46], ["2024-03-20", 269.57, 257.81], ["2024-03-21", 275.18, 257.81], ["2024-03-22", 215.29, 198.67], ["2024-03-23", 215.29, 198.67], ["2024-03-24", 215.29, 198.67], ["2024-03-25", 214.8, 198.67], ["2024-03-26", 215.07, 198.67], ["2024-03-27", 214.7, 198.67], ["2024-03-28", 216.15, 198.67], ["2024-03-29", 216.15, 198.67], ["2024-03-30", 216.15, 198.67], ["2024-03-31", 216.15, 198.67], ["2024-04-01", 216.15, 198.67], ["2024-04-02", 214.69, 198.67], ["2024-04-03", 343.34, 326.48], ["2024-04-04", 342.03, 326.48], ["2024-04-05", 339.71, 326.48], ["2024-04-06", 339.71, 326.48], ["2024-04-07", 339.71, 326.48], ["2024-04-08", 341.44, 326.48], ["2024-04-09", 340.08, 326.48], ["2024-04-10", 341.71, 326.48], ["2024-04-11", 343.21, 326.48], ["2024-04-12", 343.75, 326.48], ["2024-04-13", 343.75, 326.48], ["2024-04-14", 343.75, 326.48], ["2024-04-15", 342.66, 326.48], ["2024-04-16", 339.17, 326.48], ["2024-04-17", 337.12, 326.48], ["2024-04-18", 336.08, 326.48], ["2024-04-19", 332.43, 326.48], ["2024-04-20", 332.43, 326.48], ["2024-04-21", 332.43, 326.48], ["2024-04-22", 331.84, 326.48], ["2024-04-23", 335.14, 326.48], ["2024-04-24", 451.67, 442.73], ["2024-04-25", 449.51, 442.73], ["2024-04-26", 454.0, 442.73], ["2024-04-27", 454.0, 442.73], ["2024-04-28", 454.0, 442.73], ["2024-04-29", 452.62, 442.73], ["2024-04-30", 451.31, 442.73], ["2024-05-01", 450.05, 442.73], ["2024-05-02", 447.25, 442.73], ["2024-05-03", 449.91, 442.73], ["2024-05-04", 449.91, 442.73], ["2024-05-05", 449.91, 442.73], ["2024-05-06", 453.98, 442.73], ["2024-05-07", 457.56, 442.73], ["2024-05-08", 457.28, 442.73], ["2024-05-09", 457.74, 442.73], ["2024-05-10", 458.97, 442.73], ["2024-05-11", 458.97, 442.73], ["2024-05-12", 458.97, 442.73], ["2024-05-13", 458.88, 442.73], ["2024-05-14", 458.1, 442.73], ["2024-05-15", 461.46, 442.73], ["2024-05-16", 462.5, 442.73], ["2024-05-17", 461.32, 442.73], ["2024-05-18", 461.32, 442.73], ["2024-05-19", 461.32, 442.73], ["2024-05-20", 463.0, 442.73], ["2024-05-21", 333.64, 313.92], ["2024-05-22", 334.7, 313.92], ["2024-05-23", 335.81, 313.92], ["2024-05-24", 335.56, 313.92], ["2024-05-25", 335.56, 313.92], ["2024-05-26", 335.56, 313.92], ["2024-05-27", 336.41, 313.92], ["2024-05-28", 336.33, 313.92], ["2024-05-29", 335.11, 313.92], ["2024-05-30", 333.77, 313.92], ["2024-05-31", 330.73, 313.92], ["2024-06-01", 330.73, 313.92], ["2024-06-02", 330.73, 313.92], ["2024-06-03", 349.5, 337.54], ["2024-06-04", 347.72, 337.54], ["2024-06-05", 355.43, 337.54], ["2024-06-06", 419.31, 394.95], ["2024-06-07", 412.74, 400.88], ["2024-06-08", 412.74, 400.88], ["2024-06-09", 412.74, 400.88], ["2024-06-10", 390.12, 400.88], ["2024-06-11", 400.93, 400.88], ["2024-06-12", 393.1, 400.88], ["2024-06-13", 401.8, 400.88], ["2024-06-14", 402.3, 400.88], ["2024-06-15", 402.3, 400.88], ["2024-06-16", 402.3, 400.88], ["2024-06-17", 394.87, 400.88], ["2024-06-18", 396.23, 400.88], ["2024-06-19", 396.76, 400.88], ["2024-06-20", 399.19, 400.88], ["2024-06-21", 396.88, 400.88], ["2024-06-22", 396.88, 400.88], ["2024-06-23", 396.88, 400.88], ["2024-06-24", 391.16, 400.88], ["2024-06-25", 393.71, 400.88], ["2024-06-26", 392.43, 400.88], ["2024-06-27", 393.69, 400.88], ["2024-06-28", 395.68, 400.88], ["2024-06-29", 395.68, 400.88], ["2024-06-30", 395.68, 400.88], ["2024-07-01", 389.71, 400.88], ["2024-07-02", 391.96, 400.88], ["2024-07-03", 394.33, 400.88], ["2024-07-04", 394.98, 400.88], ["2024-07-05", 395.12, 400.88], ["2024-07-06", 395.12, 400.88], ["2024-07-07", 395.12, 400.88], ["2024-07-08", 396.62, 400.88], ["2024-07-09", 397.41, 400.88], ["2024-07-10", 399.99, 400.88], ["2024-07-11", 399.25, 400.88], ["2024-07-12", 400.44, 400.88], ["2024-07-13", 400.44, 400.88], ["2024-07-14", 400.44, 400.88], ["2024-07-15", 402.98, 400.88], ["2024-07-16", 405.45, 400.88], ["2024-07-17", 398.54, 400.88], ["2024-07-18", 391.07, 400.88], ["2024-07-19", 408.9, 420.05], ["2024-07-20", 620.67, 631.83], ["2024-07-21", 620.67, 631.83], ["2024-07-22", 605.07, 631.83], ["2024-07-23", 610.28, 631.83], ["2024-07-24", 598.39, 631.83], ["2024-07-25", 594.07, 631.83], ["2024-07-26", 594.77, 631.83], ["2024-07-27", 594.77, 631.83], ["2024-07-28", 594.77, 631.83], ["2024-07-29", 595.12, 631.83], ["2024-07-30", 591.3, 631.83], ["2024-07-31", 600.32, 631.83], ["2024-08-01", 592.61, 631.83], ["2024-08-02", 572.56, 631.83], ["2024-08-03", 572.56, 631.83], ["2024-08-04", 572.56, 631.83], ["2024-08-05", 837.58, 907.77], ["2024-08-06", 844.86, 907.77], ["2024-08-07", 855.81, 907.77], ["2024-08-08", 857.73, 907.77], ["2024-08-09", 860.11, 907.77], ["2024-08-10", 860.11, 907.77], ["2024-08-11", 860.11, 907.77], ["2024-08-12", 862.85, 907.77], ["2024-08-13", 872.48, 907.77], ["2024-08-14", 874.15, 907.77], ["2024-08-15", 890.56, 907.77], ["2024-08-16", 891.91, 907.77], ["2024-08-17", 891.91, 907.77], ["2024-08-18", 891.91, 907.77], ["2024-08-19", 1014.69, 1028.77], ["2024-08-20", 1012.35, 1028.77], ["2024-08-21", 1013.82, 1028.77], ["2024-08-22", 1013.07, 1028.77], ["2024-08-23", 1012.75, 1028.77], ["2024-08-24", 1012.75, 1028.77], ["2024-08-25", 1012.75, 1028.77], ["2024-08-26", 1007.83, 1028.77], ["2024-08-27", 1007.12, 1028.77], ["2024-08-28", 1004.25, 1028.77], ["2024-08-29", 1018.76, 1028.77], ["2024-08-30", 1015.52, 1028.77], ["2024-08-31", 1015.52, 1028.77], ["2024-09-01", 1015.52, 1028.77], ["2024-09-02", 1021.13, 1028.77], ["2024-09-03", 1010.18, 1028.77], ["2024-09-04", 996.09, 1028.77], ["2024-09-05", 990.64, 1028.77], ["2024-09-06", 975.63, 1028.77], ["2024-09-07", 975.63, 1028.77], ["2024-09-08", 975.63, 1028.77], ["2024-09-09", 989.24, 1028.77], ["2024-09-10", 989.75, 1028.77], ["2024-09-11", 983.04, 1028.77], ["2024-09-12", 1000.11, 1028.77], ["2024-09-13", 1006.94, 1028.77], ["2024-09-14", 1006.94, 1028.77], ["2024-09-15", 1006.94, 1028.77], ["2024-09-16", 1000.57, 1028.77], ["2024-09-17", 1006.86, 1028.77], ["2024-09-18", 1000.81, 1028.77], ["2024-09-19", 1014.85, 1028.77], ["2024-09-20", 1006.78, 1028.77], ["2024-09-21", 1006.78, 1028.77], ["2024-09-22", 1006.78, 1028.77], ["2024-09-23", 1019.58, 1028.77], ["2024-09-24", 1021.28, 1028.77], ["2024-09-25", 1022.72, 1028.77], ["2024-09-26", 1027.66, 1028.77], ["2024-09-27", 1029.92, 1028.77], ["2024-09-28", 1029.92, 1028.77], ["2024-09-29", 1029.92, 1028.77], ["2024-09-30", 1027.72, 1028.77], ["2024-10-01", 1025.12, 1028.77], ["2024-10-02", 1029.65, 1028.77], ["2024-10-03", 1027.47, 1028.77], ["2024-10-04", 1032.96, 1028.77], ["2024-10-05", 1032.96, 1028.77], ["2024-10-06", 1032.96, 1028.77], ["2024-10-07", 1036.37, 1028.77], ["2024-10-08", 1287.48, 1268.78], ["2024-10-09", 1409.42, 1384.29], ["2024-10-10", 1411.22, 1384.29], ["2024-10-11", 1414.45, 1384.29], ["2024-10-12", 1414.45, 1384.29], ["2024-10-13", 1414.45, 1384.29], ["2024-10-14", 1437.8, 1384.29], ["2024-10-15", 1431.01, 1384.29], ["2024-10-16", 1429.81, 1384.29], ["2024-10-17", 1439.09, 1384.29], ["2024-10-18", 1436.91, 1384.29], ["2024-10-19", 1436.91, 1384.29], ["2024-10-20", 1436.91, 1384.29], ["2024-10-21", 1431.64, 1384.29], ["2024-10-22", 1433.46, 1384.29], ["2024-10-23", 1429.54, 1384.29], ["2024-10-24", 1428.72, 1384.29], ["2024-10-25", 1434.22, 1384.29], ["2024-10-26", 1434.22, 1384.29], ["2024-10-27", 1434.22, 1384.29], ["2024-10-28", 1417.04, 1365.22], ["2024-10-29", 1419.06, 1365.22], ["2024-10-30", 1413.73, 1365.22], ["2024-10-31", 1393.72, 1365.22], ["2024-11-01", 1401.71, 1365.22], ["2024-11-02", 1401.71, 1365.22], ["2024-11-03", 1401.71, 1365.22], ["2024-11-04", 1395.33, 1365.22], ["2024-11-05", 1400.44, 1365.22], ["2024-11-06", 1427.14, 1365.22], ["2024-11-07", 1436.05, 1365.22], ["2024-11-08", 1443.91, 1365.22], ["2024-11-09", 1443.91, 1365.22], ["2024-11-10", 1443.91, 1365.22], ["2024-11-11", 1456.05, 1365.22], ["2024-11-12", 1451.92, 1365.22], ["2024-11-13", 1452.47, 1365.22], ["2024-11-14", 1454.15, 1365.22], ["2024-11-15", 1438.67, 1365.22], ["2024-11-16", 1438.67, 1365.22], ["2024-11-17", 1438.67, 1365.22], ["2024-11-18", 1440.94, 1365.22], ["2024-11-19", 1441.9, 1365.22], ["2024-11-20", 1443.11, 1365.22], ["2024-11-21", 1454.46, 1365.22], ["2024-11-22", 1465.8, 1365.22], ["2024-11-23", 1465.8, 1365.22], ["2024-11-24", 1465.8, 1365.22], ["2024-11-25", 1468.87, 1365.22], ["2024-11-26", 1469.29, 1365.22], ["2024-11-27", 1458.99, 1365.22], ["2024-11-28", 1465.69, 1365.22], ["2024-11-29", 1465.84, 1365.22], ["2024-11-30", 1465.84, 1365.22], ["2024-12-01", 1465.84, 1365.22], ["2024-12-02", 1472.53, 1365.22], ["2024-12-03", 1472.72, 1365.22], ["2024-12-04", 1475.67, 1365.22], ["2024-12-05", 1477.17, 1365.22], ["2024-12-06", 1482.09, 1365.22], ["2024-12-07", 1482.09, 1365.22], ["2024-12-08", 1482.09, 1365.22], ["2024-12-09", 1476.73, 1365.22], ["2024-12-10", 1474.79, 1365.22], ["2024-12-11", 1477.71, 1385.05], ["2024-12-12", 1474.71, 1385.05], ["2024-12-13", 1472.31, 1385.05], ["2024-12-14", 1472.31, 1385.05], ["2024-12-15", 1472.31, 1385.05], ["2024-12-16", 1478.83, 1385.05], ["2024-12-17", 1479.91, 1385.05], ["2024-12-18", 1477.12, 1385.05], ["2024-12-19", 1460.45, 1385.05], ["2024-12-20", 1464.65, 1385.05], ["2024-12-21", 1464.65, 1385.05], ["2024-12-22", 1464.65, 1385.05], ["2024-12-23", 1466.32, 1385.05], ["2024-12-24", 1466.98, 1385.05], ["2024-12-25", 1466.98, 1385.05], ["2024-12-26", 1470.87, 1385.05], ["2024-12-27", 1474.08, 1385.05], ["2024-12-28", 1474.08, 1385.05], ["2024-12-29", 1474.08, 1385.05], ["2024-12-30", 1499.53, 1385.05], ["2024-12-31", 1498.29, 1385.05], ["2025-01-01", 1498.29, 1385.05], ["2025-01-02", 1519.5, 1385.05], ["2025-01-03", 1521.02, 1385.05], ["2025-01-04", 1521.02, 1385.05], ["2025-01-05", 1521.02, 1385.05], ["2025-01-06", 1536.84, 1385.05], ["2025-01-07", 1526.54, 1385.05], ["2025-01-08", 1525.16, 1385.05], ["2025-01-09", 1526.32, 1385.05], ["2025-01-10", 1510.88, 1385.05], ["2025-01-11", 1510.88, 1385.05], ["2025-01-12", 1510.88, 1385.05], ["2025-01-13", 1505.55, 1385.05], ["2025-01-14", 1496.26, 1385.05], ["2025-01-15", 1519.21, 1385.05], ["2025-01-16", 1524.43, 1385.05], ["2025-01-17", 1536.34, 1385.05], ["2025-01-18", 1536.34, 1385.05], ["2025-01-19", 1536.34, 1385.05], ["2025-01-20", 1530.34, 1385.05], ["2025-01-21", 1529.72, 1385.05], ["2025-01-22", 1545.4, 1385.05], ["2025-01-23", 1545.06, 1385.05], ["2025-01-24", 1536.1, 1385.05], ["2025-01-25", 2049.49, 1898.44], ["2025-01-26", 2049.49, 1898.44], ["2025-01-27", 2012.31, 1898.44], ["2025-01-28", 2028.48, 1898.44], ["2025-01-29", 2035.24, 1898.44], ["2025-01-30", 2040.84, 1898.44], ["2025-01-31", 2056.46, 1898.44], ["2025-02-01", 2056.46, 1898.44], ["2025-02-02", 2056.46, 1898.44], ["2025-02-03", 2040.66, 1898.44], ["2025-02-04", 2040.63, 1898.44], ["2025-02-05", 2035.18, 1898.44], ["2025-02-06", 2049.4, 1898.44], ["2025-02-07", 2045.8, 1898.44], ["2025-02-08", 2045.8, 1898.44], ["2025-02-09", 2045.8, 1898.44], ["2025-02-10", 2061.05, 1898.44], ["2025-02-11", 2057.21, 1898.44], ["2025-02-12", 2044.46, 1898.44], ["2025-02-13", 2052.31, 1898.44], ["2025-02-14", 2050.44, 1898.44], ["2025-02-15", 2050.44, 1898.44], ["2025-02-16", 2050.44, 1898.44], ["2025-02-17", 2057.48, 1898.44], ["2025-02-18", 2059.55, 1898.44], ["2025-02-19", 2065.35, 1898.44], ["2025-02-20", 2053.27, 1898.44], ["2025-02-21", 2052.8, 1898.44], ["2025-02-22", 2052.8, 1898.44], ["2025-02-23", 2052.8, 1898.44], ["2025-02-24", 2032.01, 1898.44], ["2025-02-25", 2005.53, 1898.44], ["2025-02-26", 2024.69, 1898.44], ["2025-02-27", 2024.22, 1898.44], ["2025-02-28", 2008.52, 1898.44], ["2025-03-01", 2008.52, 1898.44], ["2025-03-02", 2008.52, 1898.44], ["2025-03-03", 2008.22, 1898.44], ["2025-03-04", 1962.7, 1898.44], ["2025-03-05", 1942.83, 1898.44], ["2025-03-06", 1940.85, 1898.44], ["2025-03-07", 1917.17, 1898.44], ["2025-03-08", 1917.17, 1898.44], ["2025-03-09", 1917.17, 1898.44], ["2025-03-10", 1903.89, 1898.44], ["2025-03-11", 1880.42, 1898.44], ["2025-03-12", 1893.31, 1898.44], ["2025-03-13", 1883.93, 1898.44], ["2025-03-14", 1902.31, 1898.44], ["2025-03-15", 1902.31, 1898.44], ["2025-03-16", 1902.31, 1898.44], ["2025-03-17", 1906.82, 1898.44], ["2025-03-18", 1900.41, 1898.44], ["2025-03-19", 1914.02, 1898.44], ["2025-03-20", 1918.75, 1898.44], ["2025-03-21", 1917.08, 1898.44], ["2025-03-22", 1917.08, 1898.44], ["2025-03-23", 1917.08, 1898.44], ["2025-03-24", 1944.51, 1898.44], ["2025-03-25", 1944.5, 1898.44], ["2025-03-26", 1942.06, 1898.44], ["2025-03-27", 1922.09, 1898.44], ["2025-03-28", 1892.15, 1898.44], ["2025-03-29", 1892.15, 1898.44], ["2025-03-30", 1892.15, 1898.44], ["2025-03-31", 1884.0, 1898.44], ["2025-04-01", 1900.73, 1898.44], ["2025-04-02", 1900.32, 1898.44], ["2025-04-03", 1830.51, 1898.44], ["2025-04-04", 1775.66, 1898.44], ["2025-04-05", 1775.66, 1898.44], ["2025-04-06", 1775.66, 1898.44], ["2025-04-07", 1755.79, 1898.44], ["2025-04-08", 1789.38, 1898.44], ["2025-04-09", 1736.54, 1898.44], ["2025-04-10", 1779.11, 1898.44], ["2025-04-11", 1769.36, 1898.44], ["2025-04-12", 1769.36, 1898.44], ["2025-04-13", 1769.36, 1898.44], ["2025-04-14", 1803.41, 1898.44], ["2025-04-15", 1814.6, 1898.44], ["2025-04-16", 1794.77, 1898.44], ["2025-04-17", 1781.69, 1898.44], ["2025-04-18", 1781.69, 1898.44], ["2025-04-19", 1781.69, 1898.44], ["2025-04-20", 1781.69, 1898.44], ["2025-04-21", 1782.17, 1898.44], ["2025-04-22", 1257.97, 1382.61], ["2025-04-23", 1995.43, 2085.14], ["2025-04-24", 2007.02, 2085.14], ["2025-04-25", 2016.77, 2085.14], ["2025-04-26", 2016.9, 2085.14], ["2025-04-27", 2014.62, 2085.14], ["2025-04-28", 2047.69, 2085.14], ["2025-04-29", 2050.31, 2085.14], ["2025-04-30", 2058.51, 2085.14], ["2025-05-01", 1931.2, 1944.09], ["2025-05-02", 1966.05, 1944.09], ["2025-05-03", 1960.31, 1944.09], ["2025-05-04", 1930.65, 1944.09], ["2025-05-05", 1933.05, 1944.09], ["2025-05-06", 1933.4, 1944.09], ["2025-05-07", 1932.42, 1944.09], ["2025-05-08", 2080.64, 1966.74], ["2025-05-09", 2076.98, 1966.74], ["2025-05-10", 2086.76, 1966.74], ["2025-05-11", 2143.37, 1966.74], ["2025-05-12", 2195.7, 1966.74], ["2025-05-13", 2206.56, 1966.74], ["2025-05-14", 2201.75, 1966.74], ["2025-05-15", 2185.55, 1966.74], ["2025-05-16", 2171.42, 1944.41], ["2025-05-17", 2169.72, 1944.41], ["2025-05-18", 2206.66, 1944.41], ["2025-05-19", 2167.97, 1944.41], ["2025-05-20", 2173.43, 1944.41], ["2025-05-21", 2195.33, 1944.41], ["2025-05-22", 2224.44, 1944.41], ["2025-05-23", 2178.26, 1944.41], ["2025-05-24", 2181.08, 1944.41], ["2025-05-25", 2166.07, 1944.41], ["2025-05-26", 2180.38, 1944.41], ["2025-05-27", 2200.6, 1944.41], ["2025-05-28", 2197.29, 1944.41], ["2025-05-29", 2145.31, 1944.41], ["2025-05-30", 2134.42, 1944.41], ["2025-05-31", 2138.01, 1944.41], ["2025-06-01", 2124.56, 1944.41], ["2025-06-02", 2114.09, 1944.41], ["2025-06-03", 2134.57, 1944.41], ["2025-06-04", 2128.72, 1944.41], ["2025-06-05", 2090.91, 1944.41], ["2025-06-06", 2113.8, 1944.41], ["2025-06-07", 2120.66, 1944.41], ["2025-06-08", 2141.49, 1944.41], ["2025-06-09", 2188.05, 1944.41], ["2025-06-10", 2188.26, 1944.41], ["2025-06-11", 2153.86, 1944.41], ["2025-06-12", 2107.03, 1944.41], ["2025-06-13", 2104.91, 1944.41], ["2025-06-14", 2101.49, 1944.41], ["2025-06-15", 2083.72, 1944.41], ["2025-06-16", 2099.99, 1944.41], ["2025-06-17", 2072.01, 1944.41], ["2025-06-18", 2074.22, 1944.41], ["2025-06-19", 2059.26, 1944.41], ["2025-06-20", 2055.4, 1944.41], ["2025-06-21", 2049.62, 1944.41], ["2025-06-22", 2024.82, 1944.41], ["2025-06-23", 2059.64, 1944.41], ["2025-06-24", 2077.11, 1944.41], ["2025-06-25", 2061.99, 1944.41], ["2025-06-26", 2061.13, 1944.41], ["2025-06-27", 2070.07, 1944.41], ["2025-06-28", 2071.37, 1944.41], ["2025-06-29", 2095.09, 1944.41], ["2025-06-30", 2082.25, 1944.41], ["2025-07-01", 2048.99, 1944.41], ["2025-07-02", 2091.56, 1944.41], ["2025-07-03", 2110.34, 1944.41], ["2025-07-04", 2091.35, 1944.41], ["2025-07-05", 2092.42, 1944.41], ["2025-07-06", 2097.61, 1944.41], ["2025-07-07", 2098.04, 1944.41], ["2025-07-08", 2104.91, 1944.41], ["2025-07-09", 2140.09, 1944.41], ["2025-07-10", 2197.9, 1944.41], ["2025-07-11", 2199.71, 1944.41], ["2025-07-12", 2199.27, 1944.41], ["2025-07-13", 2209.07, 1944.41], ["2025-07-14", 2216.01, 1944.41], ["2025-07-15", 2238.75, 1944.41], ["2025-07-16", 2237.52, 1944.41], ["2025-07-17", 2251.42, 1944.41], ["2025-07-18", 2238.12, 1944.41], ["2025-07-19", 2237.77, 1944.41], ["2025-07-20", 2252.83, 1944.41], ["2025-07-21", 2251.71, 1944.41], ["2025-07-22", 2249.97, 1944.41], ["2025-07-23", 2229.39, 1944.41], ["2025-07-24", 2212.45, 1944.41], ["2025-07-25", 2211.6, 1944.41], ["2025-07-26", 2213.3, 1944.41], ["2025-07-27", 2239.69, 1944.41], ["2025-07-28", 2237.9, 1944.41], ["2025-07-29", 2247.12, 1944.41], ["2025-07-30", 2244.31, 1944.41], ["2025-07-31", 2235.01, 1944.41], ["2025-08-01", 2170.33, 1944.41], ["2025-08-02", 2166.04, 1944.41], ["2025-08-03", 2153.56, 1944.41], ["2025-08-04", 2192.04, 1944.41], ["2025-08-05", 2164.02, 1944.41], ["2025-08-06", 2182.74, 1944.41], ["2025-08-07", 2199.92, 1944.41], ["2025-08-08", 2201.32, 1944.41], ["2025-08-09", 2200.14, 1944.41], ["2025-08-10", 2235.04, 1944.41], ["2025-08-11", 2353.11, 2070.51], ["2025-08-12", 2378.29, 2070.51], ["2025-08-13", 2395.55, 2070.51], ["2025-08-14", 2362.18, 2070.51], ["2025-08-15", 2344.28, 2070.51], ["2025-08-16", 2344.78, 2070.51], ["2025-08-17", 2343.48, 2070.51], ["2025-08-18", 2342.59, 2070.51], ["2025-08-19", 2304.24, 2070.51], ["2025-08-20", 2315.89, 2070.51], ["2025-08-21", 2296.56, 2070.51], ["2025-08-22", 2326.88, 2070.51], ["2025-08-23", 2318.86, 2070.51], ["2025-08-24", 2326.4, 2070.51], ["2025-08-25", 2295.08, 2070.51], ["2025-08-26", 2301.65, 2070.51], ["2025-08-27", 2309.69, 2070.51], ["2025-08-28", 2313.13, 2070.51], ["2025-08-29", 2274.03, 2070.51], ["2025-08-30", 2276.11, 2070.51], ["2025-08-31", 2272.67, 2070.51], ["2025-09-01", 2260.71, 2070.51], ["2025-09-02", 2276.26, 2070.51], ["2025-09-03", 2287.12, 2070.51], ["2025-09-04", 2274.76, 2070.51], ["2025-09-05", 2265.2, 2070.51], ["2025-09-06", 2263.15, 2070.51], ["2025-09-07", 2286.48, 2070.51], ["2025-09-08", 2300.73, 2070.51], ["2025-09-09", 2304.31, 2070.51], ["2025-09-10", 2351.94, 2070.51], ["2025-09-11", 2369.55, 2070.51], ["2025-09-12", 2374.22, 2070.51], ["2025-09-13", 2373.5, 2070.51], ["2025-09-14", 2389.93, 2070.51], ["2025-09-15", 2373.24, 2070.51], ["2025-09-16", 2365.22, 2070.51], ["2025-09-17", 2365.62, 2070.51], ["2025-09-18", 2399.31, 2070.51], ["2025-09-19", 2391.28, 2070.51], ["2025-09-20", 2391.32, 2070.51], ["2025-09-21", 2371.84, 2070.51], ["2025-09-22", 2362.67, 2070.51], ["2025-09-23", 2362.03, 2070.51], ["2025-09-24", 2370.47, 2070.51], ["2025-09-25", 2330.17, 2070.51], ["2025-09-26", 2329.71, 2070.51], ["2025-09-27", 2329.67, 2070.51], ["2025-09-28", 2342.17, 2070.51], ["2025-09-29", 2364.0, 2070.51], ["2025-09-30", 2358.65, 2070.51], ["2025-10-01", 2417.16, 2070.51], ["2025-10-02", 2443.31, 2070.51], ["2025-10-03", 2458.16, 2070.51], ["2025-10-04", 2459.3, 2070.51], ["2025-10-05", 2466.87, 2070.51], ["2025-10-06", 2484.26, 2070.51], ["2025-10-07", 2441.78, 2070.51], ["2025-10-08", 2489.33, 2070.51], ["2025-10-09", 2468.84, 2070.51], ["2025-10-10", 2381.18, 2070.51], ["2025-10-11", 2367.92, 2070.51], ["2025-10-12", 2373.4, 2070.51], ["2025-10-13", 2392.75, 2070.51], ["2025-10-14", 2369.35, 2070.51], ["2025-10-15", 2347.05, 2070.51], ["2025-10-16", 2333.12, 2070.51], ["2025-10-17", 2304.68, 2070.51], ["2025-10-18", 2308.85, 2070.51], ["2025-10-19", 2317.32, 2070.51], ["2025-10-20", 2365.67, 2070.51], ["2025-10-21", 2357.48, 2070.51], ["2025-10-22", 2336.27, 2070.51], ["2025-10-23", 2361.73, 2070.51], ["2025-10-24", 2366.61, 2070.51], ["2025-10-25", 2369.95, 2070.51], ["2025-10-26", 2385.14, 2070.51], ["2025-10-27", 2417.32, 2070.51], ["2025-10-28", 2413.81, 2070.51], ["2025-10-29", 2412.26, 2070.51], ["2025-10-30", 2386.43, 2070.51], ["2025-10-31", 2411.12, 2070.51], ["2025-11-01", 2414.2, 2070.51], ["2025-11-02", 2420.85, 2070.51], ["2025-11-03", 2385.64, 2070.51], ["2025-11-04", 2347.28, 2069.91], ["2025-11-05", 2362.35, 2069.91], ["2025-11-06", 2316.41, 2069.91], ["2025-11-07", 2294.0, 2069.91], ["2025-11-08", 2288.0, 2069.91], ["2025-11-09", 2302.74, 2069.91], ["2025-11-10", 2353.45, 2069.91], ["2025-11-11", 2334.39, 2069.91], ["2025-11-12", 2339.26, 2069.91], ["2025-11-13", 2277.59, 2069.91], ["2025-11-14", 2247.94, 2069.91], ["2025-11-15", 2254.32, 2069.91], ["2025-11-16", 2247.16, 2069.91], ["2025-11-17", 2228.33, 2069.91], ["2025-11-18", 2207.24, 2069.91], ["2025-11-19", 2206.89, 2069.91], ["2025-11-20", 2172.07, 2069.91], ["2025-11-21", 2132.46, 2069.91], ["2025-11-22", 2129.85, 2069.91], ["2025-11-23", 2142.3, 2069.91], ["2025-11-24", 2200.8, 2069.91], ["2025-11-25", 2191.36, 2069.91], ["2025-11-26", 2236.86, 2069.91], ["2025-11-27", 2240.24, 2069.91], ["2025-11-28", 2248.08, 2069.91], ["2025-11-29", 2247.71, 2069.91], ["2025-11-30", 2245.0, 2069.91], ["2025-12-01", 2197.56, 2069.91], ["2025-12-02", 2246.96, 2069.91], ["2025-12-03", 2260.25, 2069.91], ["2025-12-04", 2257.81, 2069.91], ["2025-12-05", 2233.06, 2069.91], ["2025-12-06", 2232.5, 2069.91], ["2025-12-07", 2238.84, 2069.91], ["2025-12-08", 2260.13, 2069.91], ["2025-12-09", 2274.85, 2069.91], ["2025-12-10", 2265.29, 2069.91], ["2025-12-11", 2252.52, 2069.91], ["2025-12-12", 2203.15, 2069.91], ["2025-12-13", 2203.57, 2069.91], ["2025-12-14", 2192.02, 2069.91], ["2025-12-15", 2182.42, 2069.91], ["2025-12-16", 2174.49, 2069.91], ["2025-12-17", 2151.38, 2069.91], ["2025-12-18", 2171.17, 2069.91], ["2025-12-19", 2198.4, 2069.91], ["2025-12-20", 2199.76, 2069.91], ["2025-12-21", 2201.31, 2069.91], ["2025-12-22", 2206.06, 2069.91], ["2025-12-23", 2202.03, 2069.91], ["2025-12-24", 2203.74, 2069.91], ["2025-12-25", 2201.31, 2069.91], ["2025-12-26", 2202.16, 2069.91], ["2025-12-27", 2204.83, 2069.91], ["2025-12-28", 2205.08, 2069.91], ["2025-12-29", 2207.96, 2069.91], ["2025-12-30", 2221.36, 2069.91], ["2025-12-31", 2217.05, 2069.91], ["2026-01-01", 2222.94, 2069.91], ["2026-01-02", 2273.0, 2069.91], ["2026-01-03", 2276.53, 2069.91], ["2026-01-04", 2281.89, 2069.91], ["2026-01-05", 2345.07, 2069.91], ["2026-01-06", 2357.59, 2069.91], ["2026-01-07", 2348.83, 2069.91], ["2026-01-08", 2317.41, 2069.91], ["2026-01-09", 2341.4, 2069.91], ["2026-01-10", 2340.71, 2069.91], ["2026-01-11", 2343.61, 2069.91], ["2026-01-12", 2345.28, 2069.91], ["2026-01-13", 2395.87, 2069.91], ["2026-01-14", 2369.41, 2069.91], ["2026-01-15", 2398.94, 2069.91], ["2026-01-16", 2396.9, 2069.91], ["2026-01-17", 2394.37, 2069.91], ["2026-01-18", 2385.53, 2069.91], ["2026-01-19", 2332.26, 2069.91], ["2026-01-20", 2296.06, 2069.91], ["2026-01-21", 2313.55, 2069.91], ["2026-01-22", 2322.51, 2069.91], ["2026-01-23", 2312.34, 2069.91], ["2026-01-24", 2310.11, 2069.91], ["2026-01-25", 2295.2, 2069.91], ["2026-01-26", 2292.42, 2069.91], ["2026-01-27", 2299.28, 2069.91], ["2026-01-28", 2313.86, 2069.91], ["2026-01-29", 2269.0, 2069.91], ["2026-01-30", 2286.98, 2069.91], ["2026-01-31", 2257.35, 2069.91], ["2026-02-01", 2248.76, 2069.91], ["2026-02-02", 2255.1, 2069.91], ["2026-02-03", 2225.79, 2069.91], ["2026-02-04", 2188.21, 2069.91], ["2026-02-05", 2101.21, 2069.91], ["2026-02-06", 2190.36, 2069.91], ["2026-02-07", 2183.5, 2069.91], ["2026-02-08", 2188.5, 2069.91], ["2026-02-09", 2196.18, 2069.91], ["2026-02-10", 2189.0, 2069.91], ["2026-02-11", 2187.79, 2069.91], ["2026-02-12", 2166.48, 2069.91], ["2026-02-13", 2181.66, 2069.91], ["2026-02-14", 2186.46, 2069.91], ["2026-02-15", 2181.36, 2069.91], ["2026-02-16", 2177.73, 2069.91], ["2026-02-17", 2177.23, 2069.91], ["2026-02-18", 2199.04, 2069.91], ["2026-02-19", 2193.03, 2069.91], ["2026-02-20", 2209.91, 2069.91], ["2026-02-21", 2210.14, 2069.91], ["2026-02-22", 2206.69, 2069.91], ["2026-02-23", 2175.67, 2069.91], ["2026-02-24", 2193.6, 2069.91], ["2026-02-25", 2229.01, 2069.91], ["2026-02-26", 2211.92, 2069.91], ["2026-02-27", 2190.8, 2069.91], ["2026-02-28", 2196.8, 2069.91], ["2026-03-01", 2191.8, 2069.91], ["2026-03-02", 2214.34, 2069.91], ["2026-03-03", 2165.94, 2069.91], ["2026-03-04", 2234.09, 2069.91], ["2026-03-05", 2196.71, 2069.91], ["2026-03-06", 2181.48, 2069.91], ["2026-03-07", 2176.91, 2069.91], ["2026-03-08", 2172.66, 2069.91], ["2026-03-09", 2148.88, 2069.91], ["2026-03-10", 2192.42, 2069.91], ["2026-03-11", 2196.29, 2069.91], ["2026-03-12", 2179.73, 2069.91], ["2026-03-13", 2183.92, 2069.91], ["2026-03-14", 2185.37, 2069.91], ["2026-03-15", 2195.12, 2069.91], ["2026-03-16", 2238.07, 2069.91], ["2026-03-17", 2231.05, 2069.91], ["2026-03-18", 2215.03, 2069.91], ["2026-03-19", 2156.03, 2069.91], ["2026-03-20", 2138.97, 2069.91], ["2026-03-21", 2128.46, 2069.91], ["2026-03-22", 2124.52, 2069.91], ["2026-03-23", 2148.82, 2069.91], ["2026-03-24", 2167.43, 2069.91], ["2026-03-25", 2190.75, 2069.91], ["2026-03-26", 2127.84, 2069.91], ["2026-03-27", 2086.07, 2069.91], ["2026-03-28", 2085.93, 2069.91], ["2026-03-29", 2085.76, 2069.91], ["2026-03-30", 2088.79, 2069.91], ["2026-03-31", 2087.43, 2069.91], ["2026-04-01", 2141.37, 2069.91], ["2026-04-02", 2131.16, 2069.91], ["2026-04-03", 2132.03, 2069.91], ["2026-04-04", 2134.06, 2069.91], ["2026-04-05", 2143.93, 2069.91], ["2026-04-06", 2142.09, 2069.91], ["2026-04-07", 2169.6, 2069.91], ["2026-04-08", 2229.78, 2069.91], ["2026-04-09", 2243.74, 2069.91], ["2026-04-10", 2265.83, 2069.91], ["2026-04-11", 2266.37, 2069.91], ["2026-04-12", 2236.79, 2069.91], ["2026-04-13", 2271.85, 2069.91], ["2026-04-14", 2296.16, 2069.91], ["2026-04-15", 2305.31, 2069.91], ["2026-04-16", 2328.51, 2069.91], ["2026-04-17", 3088.75, 2795.07], ["2026-04-18", 3081.22, 2795.07], ["2026-04-19", 3072.44, 2795.07], ["2026-04-20", 3074.15, 2795.07], ["2026-04-21", 3083.07, 2795.07], ["2026-04-22", 3115.96, 2795.07], ["2026-04-23", 3058.67, 2718.06], ["2026-04-24", 3148.1, 2795.07], ["2026-04-25", 3071.93, 2718.06], ["2026-04-26", 2949.75, 2589.71], ["2026-04-27", 2936.16, 2589.71], ["2026-04-28", 2903.87, 2589.71], ["2026-04-29", 2795.07, 2461.37], ["2026-04-30", 2818.97, 2461.37], ["2026-05-01", 2829.39, 2461.37], ["2026-05-02", 2960.12, 2589.71], ["2026-05-03", 2831.24, 2461.37], ["2026-05-04", 3079.89, 2679.56], ["2026-05-05", 3134.05, 2679.56], ["2026-05-06", 3180.46, 2679.56], ["2026-05-07", 3137.21, 2641.05], ["2026-05-08", 3123.65, 2602.55], ["2026-05-09", 3107.21, 2583.3], ["2026-05-10", 3115.69, 2583.3], ["2026-05-11", 3146.86, 2583.3], ["2026-05-12", 3085.58, 2583.3], ["2026-05-13", 3136.29, 2583.3], ["2026-05-14", 3186.07, 2583.3], ["2026-05-15", 3134.56, 2583.3], ["2026-05-16", 3129.27, 2583.3], ["2026-05-17", 3126.21, 2583.3], ["2026-05-18", 3087.48, 2583.3], ["2026-05-19", 3066.63, 2583.3], ["2026-05-20", 3128.39, 2583.3], ["2026-05-21", 3137.6, 2583.3], ["2026-05-22", 3179.5, 2583.3], ["2026-05-23", 3186.17, 2583.3], ["2026-05-24", 3186.35, 2583.3], ["2026-05-25", 3222.11, 2583.3], ["2026-05-26", 3227.9, 2583.3], ["2026-05-27", 3189.76, 2583.3], ["2026-05-28", 3212.51, 2583.3], ["2026-05-29", 3209.54, 2583.3], ["2026-05-30", 3211.6, 2583.3], ["2026-05-31", 3211.15, 2583.3], ["2026-06-01", 3857.34, 3225.03], ["2026-06-02", 3882.56, 3225.03], ["2026-06-03", 4144.73, 3482.64], ["2026-06-04", 4106.98, 3482.64], ["2026-06-05", 4013.78, 3482.64], ["2026-06-06", 4013.5, 3482.64], ["2026-06-07", 4027.08, 3482.64], ["2026-06-08", 4035.47, 3482.64], ["2026-06-09", 3953.57, 3482.64], ["2026-06-10", 3939.58, 3482.64], ["2026-06-11", 3993.87, 3482.64], ["2026-06-12", 4233.2, 3609.07], ["2026-06-13", 4238.17, 3609.07], ["2026-06-14", 4244.07, 3609.07], ["2026-06-15", 4191.77, 3479.16], ["2026-06-16", 4156.28, 3479.16], ["2026-06-17", 7352.36, 6646.49], ["2026-06-18", 7454.24, 6646.49], ["2026-06-19", 7471.94, 6646.49], ["2026-06-20", 7475.99, 6646.49], ["2026-06-21", 7470.7, 6646.49], ["2026-06-22", 7540.95, 6646.49], ["2026-06-23", 7352.35, 6646.49], ["2026-06-24", 7362.1, 6646.49], ["2026-06-25", 7374.27, 6646.49], ["2026-06-26", 7299.88, 6646.49], ["2026-06-27", 7299.53, 6646.49], ["2026-06-28", 7297.3, 6646.49], ["2026-06-29", 7303.74, 6646.49], ["2026-06-30", 7459.03, 6646.49], ["2026-07-01", 7403.73, 6646.49], ["2026-07-02", 7276.67, 6646.49], ["2026-07-03", 7344.85, 6646.49], ["2026-07-04", 7348.04, 6646.49], ["2026-07-05", 7369.8, 6646.49], ["2026-07-06", 7392.07, 6646.49], ["2026-07-07", 7189.36, 6646.49], ["2026-07-08", 7177.74, 6646.49], ["2026-07-09", 7352.94, 6646.49], ["2026-07-10", 7338.74, 6646.49], ["2026-07-11", 7337.02, 6646.49], ["2026-07-12", 7337.28, 6646.49], ["2026-07-13", 7283.14, 6646.49], ["2026-07-14", 7307.31, 6646.49], ["2026-07-15", 7250.83, 6646.49], ["2026-07-16", 7191.09, 6646.49], ["2026-07-17", 7077.39, 6646.49], ["2026-07-18", 7082.49, 6646.49], ["2026-07-19", 7082.27, 6646.49], ["2026-07-20", 7139.42, 6646.49], ["2026-07-21", 7243.33, 6646.49], ["2026-07-22", 7266.5, 6646.49], ["2026-07-23", 7179.03, 6646.49], ["2026-07-24", 7155.08, 6646.49], ["2026-07-25", 7156.26, 6646.49], ["2026-07-26", 7161.34, 6646.49], ["2026-07-27", 7026.87, 6646.49], ["2026-07-28", 6983.09, 6646.49], ["2026-07-29", 6883.43, 6646.49], ["2026-07-30", 6962.07, 6646.49], ["2026-07-31", 6979.38, 6646.49], ["2026-08-01", 6979.11, 6646.49], ["2026-08-02", 6982.76, 6646.49], ["2026-08-03", 7045.85, 6646.49], ["2026-08-04", 7228.29, 6646.49], ["2026-08-05", 7234.28, 6646.49], ["2026-08-06", 7231.61, 6646.49], ["2026-08-07", 7243.8, 6646.49], ["2026-08-08", 7244.01, 6646.49], ["2026-08-09", 7243.63, 6646.49], ["2026-08-10", 7224.39, 6646.49], ["2026-08-11", 7227.15, 6646.49], ["2026-08-12", 7293.1, 6646.49], ["2026-08-13", 7356.96, 6646.49], ["2026-08-14", 7279.63, 6646.49], ["2026-08-15", 7279.84, 6646.49], ["2026-08-16", 7278.37, 6646.49], ["2026-08-17", 7355.09, 6646.49], ["2026-08-18", 7172.39, 6646.49], ["2026-08-19", 7146.06, 6646.49], ["2026-08-20", 7132.13, 6646.49], ["2026-08-21", 7187.68, 6646.49], ["2026-08-22", 7180.85, 6646.49], ["2026-08-23", 7203.31, 6646.49], ["2026-08-24", 7142.04, 6646.49], ["2026-08-25", 7191.18, 6646.49], ["2026-08-26", 7206.67, 6646.49], ["2026-08-27", 7243.79, 6646.49], ["2026-08-28", 7271.63, 6646.49], ["2026-08-29", 7273.98, 6646.49], ["2026-08-30", 6923.67, 6317.92], ["2026-08-31", 7264.78, 6727.3], ["2026-09-01", 7224.8, 6727.3], ["2026-09-02", 7230.41, 6727.3], ["2026-09-03", 7295.28, 6727.3], ["2026-09-04", 7334.92, 6727.3], ["2026-09-05", 7335.89, 6727.3], ["2026-09-06", 7338.91, 6727.3], ["2026-09-07", 7376.76, 6727.3], ["2026-09-08", 7394.0, 6727.3], ["2026-09-09", 7309.93, 6727.3], ["2026-09-10", 7242.48, 6727.3], ["2026-09-11", 7318.05, 6727.3], ["2026-09-12", 7318.64, 6727.3], ["2026-09-13", 7316.67, 6727.3], ["2026-09-14", 7204.99, 6727.3], ["2026-09-15", 7170.99, 6727.3], ["2026-09-16", 7240.65, 6727.3], ["2026-09-17", 7343.59, 6727.3], ["2026-09-18", 7375.87, 6727.3], ["2026-09-19", 7378.09, 6727.3], ["2026-09-20", 7377.57, 6727.3], ["2026-09-21", 7591.65, 6727.3], ["2026-09-22", 7649.81, 6727.3], ["2026-09-23", 7607.39, 6727.3], ["2026-09-24", 7551.54, 6727.3], ["2026-09-25", 7613.37, 6727.3], ["2026-09-26", 7615.47, 6727.3], ["2026-09-27", 7616.27, 6727.3], ["2026-09-28", 7562.26, 6727.3], ["2026-09-29", 7628.65, 6727.3], ["2026-09-30", 7629.3, 6727.3], ["2026-10-01", 7646.51, 6727.3], ["2026-10-02", 7769.48, 6727.3], ["2026-10-03", 7771.02, 6727.3], ["2026-10-04", 7780.76, 6727.3], ["2026-10-05", 7821.56, 6727.3], ["2026-10-06", 7842.19, 6727.3], ["2026-10-07", 7779.78, 6727.3], ["2026-10-08", 7720.06, 6727.3], ["2026-10-09", 7711.18, 6727.3], ["2026-10-10", 7713.32, 6727.3], ["2026-10-11", 7717.69, 6727.3], ["2026-10-12", 7684.84, 6727.3], ["2026-10-13", 7606.05, 6727.3], ["2026-10-14", 7596.61, 6727.3], ["2026-10-15", 8115.15, 7369.03], ["2026-10-16", 8053.34, 7369.03], ["2026-10-17", 8052.68, 7369.03], ["2026-10-18", 8056.69, 7369.03], ["2026-10-19", 8106.52, 7369.03], ["2026-10-20", 8066.38, 7369.03], ["2026-10-21", 8136.92, 7369.03], ["2026-10-22", 7911.78, 7369.03], ["2026-10-23", 7919.31, 7369.03], ["2026-10-24", 7917.6, 7369.03], ["2026-10-25", 7912.7, 7369.03], ["2026-10-26", 7990.75, 7369.03], ["2026-10-27", 8148.99, 7369.03], ["2026-10-28", 8216.77, 7369.03], ["2026-10-29", 8165.74, 7369.03], ["2026-10-30", 7898.4, 7369.03], ["2026-10-31", 7899.94, 7369.03], ["2026-11-01", 7906.29, 7369.03], ["2026-11-02", 7909.4, 7369.03], ["2026-11-03", 7842.44, 7369.03], ["2026-11-04", 7848.22, 7369.03], ["2026-11-05", 7764.84, 7369.03], ["2026-11-06", 7783.75, 7369.03], ["2026-11-07", 7783.76, 7369.03], ["2026-11-08", 7777.07, 7369.03], ["2026-11-09", 7942.08, 7369.03], ["2026-11-10", 7963.88, 7369.03], ["2026-11-11", 8258.54, 7369.03], ["2026-11-12", 8247.11, 7369.03], ["2026-11-13", 8041.6, 7369.03], ["2026-11-14", 8017.76, 7369.03], ["2026-11-15", 8024.53, 7369.03], ["2026-11-16", 7934.43, 7369.03], ["2026-11-17", 7720.05, 7369.03], ["2026-11-18", 7756.04, 7369.03], ["2026-11-19", 7773.8, 7369.03], ["2026-11-20", 7292.35, 7369.03], ["2026-11-21", 7300.02, 7369.03], ["2026-11-22", 7306.1, 7369.03], ["2026-11-23", 7716.19, 7369.03], ["2026-11-24", 7401.56, 7369.03], ["2026-11-25", 7171.24, 7369.03], ["2026-11-26", 7476.49, 7369.03], ["2026-11-27", 7476.49, 7369.03], ["2026-11-28", 7472.01, 7369.03]], "maanden": [{"m": "2024-10", "inc": 497.8, "out": 540.57, "saved": 0.0}, {"m": "2024-11", "inc": 836.59, "out": 1061.62, "saved": -128.74}, {"m": "2024-12", "inc": 919.5, "out": 734.27, "saved": 34.33}, {"m": "2025-01", "inc": 1017.55, "out": 825.0, "saved": 333.7}, {"m": "2025-02", "inc": 667.15, "out": 766.53, "saved": 0.0}, {"m": "2025-03", "inc": 676.5, "out": 584.54, "saved": 0.0}, {"m": "2025-04", "inc": 668.94, "out": 645.04, "saved": 152.15}, {"m": "2025-05", "inc": 772.66, "out": 375.07, "saved": 326.86}, {"m": "2025-06", "inc": 612.81, "out": 353.71, "saved": 209.36}, {"m": "2025-07", "inc": 971.97, "out": 762.33, "saved": 381.94}, {"m": "2025-08", "inc": 1972.73, "out": 1296.85, "saved": 1135.81}, {"m": "2025-09", "inc": 1312.76, "out": 2224.35, "saved": 129.66}, {"m": "2025-10", "inc": 3787.8, "out": 3538.36, "saved": 2139.42}, {"m": "2025-11", "inc": 1490.71, "out": 2292.27, "saved": 100.1}, {"m": "2025-12", "inc": 3612.22, "out": 3763.88, "saved": 1713.44}, {"m": "2026-01", "inc": 2085.46, "out": 1743.96, "saved": 87.4}, {"m": "2026-02", "inc": 731.32, "out": 1211.56, "saved": 0.0}, {"m": "2026-03", "inc": 1296.81, "out": 1333.81, "saved": 0.0}, {"m": "2026-04", "inc": 1589.43, "out": 2066.88, "saved": -460.1}, {"m": "2026-05", "inc": 1038.83, "out": 1197.52, "saved": 121.93}, {"m": "2026-06", "inc": 966.34, "out": 848.66, "saved": -138.84}, {"m": "2026-07", "inc": 778.68, "out": 715.53, "saved": 0.0}, {"m": "2026-08", "inc": 3769.79, "out": 2007.95, "saved": 123.31}, {"m": "2026-09", "inc": 3436.48, "out": 4395.09, "saved": 106.36}, {"m": "2026-10", "inc": 1622.48, "out": 1924.54, "saved": 641.74}, {"m": "2026-11", "inc": 1788.59, "out": 2088.57, "saved": 256.69}], "generated": "28/11/2026 08:06", "spaar": 1008.25, "vermogen": {"datum": "2026-11-28", "Zichtrekeningen": 229.0, "Spaargeld": 1008.24, "Beleggingen": 7064.53, "Crypto": 407.48, "geschat": false}, "buffer_doel": 3850.42};
+const MONTHS = ["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+const nl = (v, d = 0) => Math.abs(v).toLocaleString("nl-BE", { minimumFractionDigits: d, maximumFractionDigits: d });
+const eur = v => (v < 0 ? "−" : "") + "€" + nl(v);
+const short = v => Math.abs(v) >= 1e6 ? (v < 0 ? "−" : "") + "€" + (Math.abs(v) / 1e6).toLocaleString("nl-BE", { maximumFractionDigits: 2 }) + "M"
+  : Math.abs(v) >= 1e4 ? (v < 0 ? "−" : "") + "€" + Math.round(Math.abs(v) / 1e3) + "k" : eur(v);
+const pct = (v, d = 1) => (v >= 0 ? "+" : "−") + nl(v * 100, d) + "%";
+
+// ---------- vertrekpunt uit je eigen cijfers ----------
+const B = D.beleg, last = B.at(-1) || ["", 0, 0], V0 = last[1], I0 = last[2];
+const mEnd = {}; B.forEach(r => mEnd[r[0].slice(0, 7)] = r);
+const MS = Object.keys(mEnd).sort(), ME = MS.map(m => mEnd[m]);
+const deps12 = ME.slice(-13).map((r, i, a) => i ? r[2] - a[i - 1][2] : 0).slice(1);
+const avgDep = Math.max(0, Math.round(deps12.reduce((a, b) => a + b, 0) / Math.max(1, deps12.length) / 10) * 10);
+// maandrendementen (zonder stortingen) → beweeglijkheid van jouw portefeuille
+const rets = []; for (let i = 1; i < ME.length; i++) { const p = ME[i - 1], c = ME[i]; if (p[1] > 300) rets.push((c[1] - p[1] - (c[2] - p[2])) / p[1]); }
+const mean = rets.reduce((a, b) => a + b, 0) / Math.max(1, rets.length);
+const sdM = Math.sqrt(rets.reduce((a, b) => a + (b - mean) ** 2, 0) / Math.max(1, rets.length - 1));
+const SIGMA = Math.min(0.35, Math.max(0.12, sdM * Math.sqrt(12) || 0.17));
+const full = D.maanden.slice(0, -1).slice(-12);
+const yearOut = full.reduce((a, m) => a + m.out, 0) * 12 / Math.max(1, full.length);
+const SC = [["goed", 0.10, "g", "↗"], ["normaal", 0.07, "y", "→"], ["slecht", 0.02, "r", "↘"]];
+let DEP = avgDep, YRS = 20, REAL = false;
+try { const s = JSON.parse(localStorage.getItem("projSet") || "{}"); if (s.dep != null) DEP = s.dep; if (s.yrs) YRS = s.yrs; if (s.real) REAL = s.real; } catch (e) {}
+
+// ---------- rekenen ----------
+function path(rate, months, dep, shock = null) {   // waarde per maand bij vast jaarrendement
+  const rm = Math.pow(1 + rate, 1 / 12) - 1, out = [V0]; let v = V0;
+  for (let m = 1; m <= months; m++) { v = v * (1 + rm) + dep; if (shock && m === shock.m) v *= 1 - shock.d; out.push(v); }
+  return out;
+}
+const deflate = (v, m) => REAL ? v / Math.pow(1.02, m / 12) : v;
+function rng(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function monteCarlo(months, dep, n = 2000) {
+  const r = rng(42), mu = Math.log(1.07) / 12 - (SIGMA ** 2) / 24, sm = SIGMA / Math.sqrt(12);
+  const qs = [0.05, 0.25, 0.5, 0.75, 0.95], step = Math.max(1, Math.round(months / 120)), idx = [];
+  for (let m = 0; m <= months; m += step) idx.push(m); if (idx.at(-1) !== months) idx.push(months);
+  const snaps = idx.map(() => new Float64Array(n));
+  for (let k = 0; k < n; k++) { let v = V0, j = 0;
+    for (let m = 0; m <= months; m++) {
+      if (m) { const z = Math.sqrt(-2 * Math.log(r() || 1e-12)) * Math.cos(2 * Math.PI * r()); v = v * Math.exp(mu + sm * z) + dep; }
+      if (m === idx[j]) { snaps[j][k] = v; j++; } } }
+  return { idx, q: snaps.map(a => { const s = Array.from(a).sort((x, y) => x - y); return qs.map(q => s[Math.floor(q * (n - 1))]); }) };
+}
+function whenReach(target, rate, dep, max = 600) { const p = path(rate, max, dep); for (let m = 0; m < p.length; m++) if (deflate(p[m], m) >= target) return m; return null; }
+const yrsLbl = m => m == null ? "—" : m === 0 ? "nu" : m < 12 ? `${m} mnd` : `${(m / 12).toLocaleString("nl-BE", { maximumFractionDigits: 1 })} j`;
+const yearOf = m => m == null ? "" : String(new Date().getFullYear() + Math.floor((new Date().getMonth() + m) / 12));
+
+// ---------- tekenen ----------
+let MC = null;
+function renderMC() {
+  const M = YRS * 12, xs = MC.idx, q = MC.q.map((r, j) => r.map(v => deflate(v, xs[j])));
+  const det = SC.map(([, r]) => { const p = path(r, M, DEP); return xs.map(m => deflate(p[m], m)); });
+  const inl = xs.map(m => deflate(I0 + DEP * m, m)), n = xs.length - 1;
+  const head = j => {
+    const m = xs[j];
+    document.getElementById("hlabel").textContent = j === n ? `Verwacht over ${YRS} jaar` : `In ${yearOf(m)} (over ${yrsLbl(m)})`;
+    document.getElementById("hval").textContent = eur(det[1][j]);
+    document.getElementById("hsub").innerHTML = `<span class="g">goed <b>${short(det[0][j])}</b></span> · <span class="r">slecht <b>${short(det[2][j])}</b></span> · ingelegd <b>${short(inl[j])}</b>` +
+      (j === n ? "" : `<br>90% kans tussen <b>${short(q[j][0])}</b> en <b>${short(q[j][4])}</b>`);
+  };
+  head(n);
+  FIN.line(document.getElementById("mc"), { height: 240, axis: true, zero: true, fmt: short,
+    xlabels: j => xs[j] ? "+" + Math.round(xs[j] / 12) + "j" : "nu", label: j => `${yearOf(xs[j])} · 90%: ${short(q[j][0])} – ${short(q[j][4])}`,
+    series: [{ vals: q.map(r => r[4]), lo: q.map(r => r[0]), color: "var(--accent)", opacity: .12 }, { vals: q.map(r => r[3]), lo: q.map(r => r[1]), color: "var(--accent)", opacity: .22 },
+      { vals: inl, color: "var(--muted)", width: 1.3, dash: "3 4", dot: false }, { vals: det[0], color: "var(--pos)", width: 1.5 }, { vals: det[2], color: "var(--neg)", width: 1.5 },
+      { vals: det[1], color: "var(--accent)", width: 2.4 }],
+    onScrub: j => head(j == null ? n : j) });
+  const loss = q.at(-1)[0] < deflate(I0 + DEP * M, M);
+  document.getElementById("mcNote").innerHTML = (loss ? `<span class="r">In de slechtste 5% eindig je onder je inleg.</span>` : `<span class="g">Zelfs in de slechtste 5% eindig je boven je inleg.</span>`);
+  document.getElementById("hY").textContent = YRS;
+  const mc = MC.q.at(-1).map(v => deflate(v, M));
+  document.getElementById("sum").innerHTML = [
+    ["<span class=g>↗ Goed (10% per jaar)</span>", `<span class=g>${eur(det[0][n])}</span>`], ["<span class=y>→ Normaal (7%)</span>", `<span class=y>${eur(det[1][n])}</span>`],
+    ["<span class=r>↘ Slecht (2%)</span>", `<span class=r>${eur(det[2][n])}</span>`], ["Ingelegd", eur(inl[n])],
+    ["90% kans op meer dan", eur(mc[0])], ["50% kans op meer dan", eur(mc[2])], ["10% kans op meer dan", eur(mc[4])],
+    ["Per maand op te nemen (4%-regel)", eur(det[1][n] * 0.04 / 12)],
+  ].map(([a, b]) => `<div>${a}</div><div>${b}</div>`).join("");
+}
+function renderTables() {
+  const M = YRS * 12;
+  document.getElementById("miles").innerHTML = `<tr><th>Doel</th><th class="num g">goed</th><th class="num y">normaal</th><th class="num r">slecht</th></tr>` +
+    [10e3, 25e3, 50e3, 100e3, 250e3, 500e3, 1e6].map(t => `<tr><td>${short(t)}</td>${SC.map(([, r, c]) => { const m = whenReach(t, r, DEP); return `<td class="num ${c}" title="${yearOf(m)}">${yrsLbl(m)}</td>`; }).join("")}</tr>`).join("");
+  const base = deflate(path(0.07, M, DEP).at(-1), M);
+  const wi = [["+€50/maand", DEP + 50], ["+€100/maand", DEP + 100], ["2× inleg", DEP * 2], ["stoppen met inleggen", 0], ["−€100/maand", Math.max(0, DEP - 100)]]
+    .map(([l, d]) => { const v = deflate(path(0.07, M, d).at(-1), M); return [l, v, v - base]; });
+  const later = deflate(path(0.07, M - 60, DEP).at(-1), M);
+  wi.push(["5 jaar wachten", later, later - base]);
+  document.getElementById("whatif").innerHTML = `<tr><th>Scenario (normaal)</th><th class="num">na ${YRS}j</th><th class="num">verschil</th></tr>` +
+    `<tr><td class="y">zoals nu (${eur(DEP)}/m)</td><td class="num">${short(base)}</td><td class="num m">—</td></tr>` +
+    wi.map(([l, v, d]) => `<tr><td>${l}</td><td class="num">${short(v)}</td><td class="num ${d >= 0 ? "g" : "r"}">${d >= 0 ? "+" : "−"}${short(Math.abs(d))}</td></tr>`).join("");
+  // crashtest: −35% na 1 jaar, en −35% in het laatste jaar
+  const normal = path(0.07, M, DEP), early = path(0.07, M, DEP, { m: 12, d: 0.35 }), lateC = path(0.07, M, DEP, { m: M - 6, d: 0.35 });
+  let back = null; for (let m = 13; m <= M; m++) if (early[m] >= normal[12]) { back = m - 12; break; }
+  document.getElementById("crash").innerHTML = `<div class="sub" style="margin-bottom:6px">De beurs zakt 35%, zoals in 2008 of 2020.</div>`;
+  document.getElementById("crashT").innerHTML = `<tr><th>Wanneer</th><th class="num">na ${YRS}j</th><th class="num">verlies</th></tr>` +
+    [["geen crash", normal.at(-1), 0], ["over 1 jaar", early.at(-1), early.at(-1) - normal.at(-1)], ["vlak voor het einde", lateC.at(-1), lateC.at(-1) - normal.at(-1)]]
+      .map(([l, v, d]) => `<tr><td>${l}</td><td class="num">${short(deflate(v, M))}</td><td class="num ${d < 0 ? "r" : "m"}">${d ? "−" + short(Math.abs(deflate(d, M))) : "—"}</td></tr>`).join("") +
+    "";
+  document.getElementById("crashNote").textContent = `Bij een vroege crash ben je terug op het niveau van ervoor na ${yrsLbl(back)}.`;
+  const target = yearOut * 25, fm = SC.map(([, r]) => whenReach(target, r, DEP));
+  document.getElementById("fire").innerHTML = [["Uitgaven per jaar", eur(yearOut)], ["Nodig (25× uitgaven)", `<span class=y>${eur(target)}</span>`],
+    ...SC.map(([n, , c], i) => [`<span class=${c}>${n}</span>`, `<span class=${c}>${fm[i] == null ? "niet binnen 50j" : `${yrsLbl(fm[i])} · ${yearOf(fm[i])}`}</span>`]),
+    ["Nu bereikt", `${nl(V0 / target * 100, 1)}%`]].map(([a, b]) => `<div>${a}</div><div>${b}</div>`).join("");
+  const spaar = D.spaar, monthOut = yearOut / 12, goal = D.buffer_doel || 3000, saveM = Math.max(0, full.reduce((a, m) => a + m.inc - m.out, 0) / Math.max(1, full.length));
+  (document.getElementById("buf") || {}).innerHTML = [["Spaargeld", eur(spaar)], ["= maanden uitgaven", `<span class="${spaar / monthOut >= 3 ? "g" : "r"}">${nl(spaar / monthOut, 1)}</span>`],
+    ["Doel", eur(goal)], ["Nog nodig", eur(Math.max(0, goal - spaar))], ["Gem. over per maand", eur(saveM)],
+    ["Buffer vol over", saveM > 0 ? yrsLbl(Math.ceil(Math.max(0, goal - spaar) / saveM)) : "<span class=r>nooit aan dit tempo</span>"]].map(([a, b]) => `<div>${a}</div><div>${b}</div>`).join("");
+  const first = B.find(r => r[2] > 0) || last, yrs = (new Date(last[0]) - new Date(first[0])) / 3.156e10;
+  (document.getElementById("past") || {}).innerHTML = [["Belegt sinds", first[0].split("-").reverse().join("/")], ["Ingelegd", eur(I0)], ["Waarde", eur(V0)],
+    ["Winst", `<span class="${V0 >= I0 ? "g" : "r"}">${V0 >= I0 ? "+" : "−"}${eur(Math.abs(V0 - I0))}</span>`], ["Gem. inleg (12m)", eur(avgDep) + "/m"],
+    ["Beste maand", (() => { let b = -1e9, m = ""; for (let i = 1; i < ME.length; i++) { const d = ME[i][1] - ME[i - 1][1] - (ME[i][2] - ME[i - 1][2]); if (d > b) { b = d; m = MS[i]; } } return `<span class=g>+${eur(b)}</span> ${MONTHS[+m.slice(5) - 1]} ${m.slice(2, 4)}`; })()],
+    ["Slechtste maand", (() => { let b = 1e9, m = ""; for (let i = 1; i < ME.length; i++) { const d = ME[i][1] - ME[i - 1][1] - (ME[i][2] - ME[i - 1][2]); if (d < b) { b = d; m = MS[i]; } } return `<span class=r>−${eur(Math.abs(b))}</span> ${MONTHS[+m.slice(5) - 1]} ${m.slice(2, 4)}`; })()],
+  ].map(([a, b]) => `<div>${a}</div><div>${b}</div>`).join("");
+  document.getElementById("basis").textContent = `Vertrekt van ${eur(V0)} belegd en ${yrs.toLocaleString("nl-BE", { maximumFractionDigits: 1 })} jaar eigen historiek.`;
+}
+function all() {
+  try { localStorage.setItem("projSet", JSON.stringify({ dep: DEP, yrs: YRS, real: REAL })); } catch (e) {}
+  MC = monteCarlo(YRS * 12, DEP); renderMC(); renderTables();
+}
+const dep = document.getElementById("dep"), depN = document.getElementById("depN");
+dep.value = depN.value = DEP; document.getElementById("real").checked = REAL;
+let t; const setDep = v => { DEP = Math.max(0, +v || 0); dep.value = depN.value = DEP; clearTimeout(t); t = setTimeout(all, 60); };
+dep.oninput = e => setDep(e.target.value); depN.oninput = e => setDep(e.target.value);
+document.getElementById("real").onchange = e => { REAL = e.target.checked; all(); };
+document.querySelectorAll("#hor button").forEach(b => { b.classList.toggle("on", +b.dataset.y === YRS);
+  b.onclick = () => { YRS = +b.dataset.y; document.querySelectorAll("#hor button").forEach(x => x.classList.toggle("on", x === b)); all(); }; });
+all();
+let rw = innerWidth, rt; addEventListener("resize", () => { if (innerWidth === rw) return; rw = innerWidth; clearTimeout(rt); rt = setTimeout(renderMC, 150); });
+</script>
+</body>
+</html>
